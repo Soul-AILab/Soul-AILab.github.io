@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <!-- <meta name="description" content="SoulX-LiveTalk: Real-time High-Fidelity Talking Portrait Generation."> -->
-  <meta name="description" content="SoulX-LiveTalk: Real-Time Infinite Streaming of Audio-Driven Avatars via Self-Correcting Bidirectional Distillation">
+  <meta name="description" content="SoulX-FlashTalk: Real-Time Infinite Streaming of Audio-Driven Avatars via Self-Correcting Bidirectional Distillation">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
   <meta name="theme-color" content="#002111">
   <title>SoulX-LiveTalk</title>
@@ -336,7 +336,7 @@
   <div class="content">
     <div class="text">
       <h1 style="text-shadow: 0px 0px 15px var(--highlight-color); color: var(--accent-color)">
-        SoulX-LiveTalk <br>
+        SoulX-FlashTalk <br>
         <span style="font-size: 30px;">Real-Time Infinite Streaming of Audio-Driven Avatars via Self-Correcting Bidirectional Distillation</span>
       </h1>
       <div class="is-size-5 publication-authors" style="color: white;">
@@ -393,13 +393,13 @@
         </span>
         <span>Technique Report</span>
       </a>
-      <a class="paper-button" href="https://github.com/Soul-AILab/SoulX-LiveTalk" target="_blank" rel="noopener noreferrer">
+      <a class="paper-button" href="https://github.com/Soul-AILab/SoulX-FlashTalk" target="_blank" rel="noopener noreferrer">
         <span class="icon">
           <i class="fab fa-github"></i>
         </span>
         <span>Code</span>
       </a>
-      <a class="paper-button" href="https://github.com/Soul-AILab/SoulX-LiveTalk" target="_blank" rel="noopener noreferrer">
+      <a class="paper-button" href="https://github.com/Soul-AILab/SoulX-FlashTalk" target="_blank" rel="noopener noreferrer">
         <span class="icon">
           <i class="fa fa-desktop"></i>
         </span>
@@ -415,8 +415,8 @@
     <h1>Abstract</h1>
     <div class="content has-text-justified">
       <p style="font-size: 18px; line-height: 30px;">
-        <!-- We propose <strong style="color: #39C5BB;">SoulX-LiveTalk</strong>, a 14B-parameter system optimized for high-fidelity streaming. Unlike standard unidirectional approaches, we employ a <strong>Bidirectional Streaming Distillation</strong> strategy that maintains bidirectional attention within video chunks. This design preserves spatial and temporal correlations, significantly improving motion coherence and visual details. Notably, this architectural alignment simplifies training, enabling convergence in just <strong style="color: #39C5BB;">200 steps</strong>—a <strong style="color: #39C5BB;">23 X</strong> efficiency improvement over prior methods. To ensure stability during infinite generation, we introduce a <strong>Multi-step Retrospective Self-Correction Mechanism</strong> that allows the model to recover from accumulated errors. Additionally, we implemented a full-stack acceleration solution featuring hybrid sequence parallelism, Parallel VAE, and kernel optimizations. Evaluations demonstrate that SoulX-LiveTalk is the first <strong style="color: #39C5BB;">first 14B-scale system</strong> to achieve a start-up latency of <strong style="color: #39C5BB;">0.87s</strong> and a real-time throughput of <strong style="color: #39C5BB;">32 FPS</strong>, setting a new benchmark for interactive digital human generation. -->
-        <strong style="color: #39C5BB;">SoulX-LiveTalk</strong>, a 14B-parameter system optimized for high-fidelity streaming. By employing <strong>Bidirectional Streaming Distillation</strong> , we retain intra-chunk bidirectional attention to preserve spatiotemporal correlations. This design significantly simplifies training. The model converges with only <strong style="color: #39C5BB;">1,000 steps of SFT and 200 steps of distillation</strong>, representing a <strong style="color: #39C5BB;">23x efficiency improvement</strong>. To ensure infinite stability, we incorporate a <strong>Multi-step Retrospective Self-Correction Mechanism</strong>. Combined with our full-stack acceleration suite, SoulX-LiveTalk becomes the <strong style="color: #39C5BB;">first</strong> 14B-scale system to achieve a <strong style="color: #39C5BB;">start-up latency of 0.87s</strong> and a <strong style="color: #39C5BB;">real-time throughput of 32 FPS</strong>.
+        <!-- We propose <strong style="color: #39C5BB;">SoulX-FlashTalk</strong>, a 14B-parameter system optimized for high-fidelity streaming. Unlike standard unidirectional approaches, we employ a <strong>Bidirectional Streaming Distillation</strong> strategy that maintains bidirectional attention within video chunks. This design preserves spatial and temporal correlations, significantly improving motion coherence and visual details. Notably, this architectural alignment simplifies training, enabling convergence in just <strong style="color: #39C5BB;">200 steps</strong>—a <strong style="color: #39C5BB;">23 X</strong> efficiency improvement over prior methods. To ensure stability during infinite generation, we introduce a <strong>Multi-step Retrospective Self-Correction Mechanism</strong> that allows the model to recover from accumulated errors. Additionally, we implemented a full-stack acceleration solution featuring hybrid sequence parallelism, Parallel VAE, and kernel optimizations. Evaluations demonstrate that SoulX-LiveTalk is the first <strong style="color: #39C5BB;">first 14B-scale system</strong> to achieve a start-up latency of <strong style="color: #39C5BB;">0.87s</strong> and a real-time throughput of <strong style="color: #39C5BB;">32 FPS</strong>, setting a new benchmark for interactive digital human generation. -->
+        <strong style="color: #39C5BB;">SoulX-FlashTalk</strong>, a 14B-parameter system optimized for high-fidelity streaming. By employing <strong>Bidirectional Streaming Distillation</strong> , we retain intra-chunk bidirectional attention to preserve spatiotemporal correlations. This design significantly simplifies training. The model converges with only <strong style="color: #39C5BB;">1,000 steps of SFT and 200 steps of distillation</strong>, representing a <strong style="color: #39C5BB;">23x efficiency improvement</strong>. To ensure infinite stability, we incorporate a <strong>Multi-step Retrospective Self-Correction Mechanism</strong>. Combined with our full-stack acceleration suite, SoulX-FlashTalk becomes the <strong style="color: #39C5BB;">first</strong> 14B-scale system to achieve a <strong style="color: #39C5BB;">start-up latency of 0.87s</strong> and a <strong style="color: #39C5BB;">real-time throughput of 32 FPS</strong>.
       </p>
     </div>
   </div>
@@ -429,7 +429,7 @@
       Real-time Interaction Demo
     </h1>
     <h2 class="subtitle has-text-centered" style="margin-top: 15px;">
-      <strong>SoulX-LiveTalk</strong> supports real-time inference with minimal latency.
+      <strong>SoulX-FlashTalk</strong> supports real-time inference with minimal latency.
     </h2>
   </div>
   <div class="hero-body">
@@ -654,8 +654,8 @@
     
     <h1>BibTeX</h1>
     <pre style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; overflow-x: auto;"><code style="color: #b9bbc6; font-size: 14px;">@article{soulx2025livetalk,
-      title={SoulX-LiveTalk Technical Report}, 
-      author={Le Shen and Qiao Qian and Tan Yu and Ke Zhou and Tianhang Yu and Yu Zhan and Zhenjie Wang and Ming Tao and Shunshun Yin and Siyuan Liu},
+      title={SoulX-FlashTalk Technical Report}, 
+      author={Le Shen and Qian Qiao and Tan Yu and Ke Zhou and Tianhang Yu and Yu Zhan and Zhenjie Wang and Ming Tao and Shunshun Yin and Siyuan Liu},
       year={2025},
       eprint={2512.23379},
       archivePrefix={arXiv},
