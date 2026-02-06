@@ -1,2 +1,0 @@
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-soulx-singer/static/videos/*.mp4 filter=lfs diff=lfs merge=lfs -text
