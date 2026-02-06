@@ -7,3 +7,4 @@ pretrained_models/
 # C extensions
 *.so
 *.mp4
+!soulx-singer/static/videos/*.mp4
