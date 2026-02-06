@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SoulX-Singer: High-Quality Zero-Shot Singing Voice Synthesis</title>
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="SoulX-Singer Official Demo Page" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Dynamic Animated Background -->
+  <div class="animated-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="note" style="left: 10%; animation-duration: 15s; font-size: 3rem;">♪</div>
+    <div class="note" style="left: 80%; animation-duration: 22s; animation-delay: 2s; font-size: 5rem;">♫</div>
+    <div class="note" style="left: 40%; animation-duration: 18s; animation-delay: 5s; font-size: 2rem;">♩</div>
+    <div class="note" style="left: 60%; animation-duration: 25s; animation-delay: 8s; font-size: 4rem;">♬</div>
+  </div>
+
+  <header class="hero" id="top">
+    <div class="logo-container">
+      <img src="assets/SoulX-Singer-logo.png" alt="SoulX-Singer Logo" class="project-logo" />
+    </div>
+    
+    <p class="subtitle">Towards High-Quality Zero-Shot Singing Voice Synthesis</p>
+    
+    <div class="meta">
+      <span class="author-block">Soul AI Lab</span>
+    </div>
+
+    <div class="links">
+      <a href="#" class="chip">
+         <span class="icon">📄</span> Paper (Coming Soon)
+      </a>
+      <a href="#" class="chip">
+         <span class="icon">🐙</span> Code (Coming Soon)
+      </a>
+      <a href="#" class="chip">
+         <span class="icon">🤗</span> HuggingFace (Coming Soon)
+      </a>
+      <a href="#" class="chip">
+         <span class="icon">💬</span> Contact (Coming Soon)
+      </a>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="#abstract">Abstract</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#zero-shot-svs">Zero-Shot SVS</a>
+    <a href="#lyric-editing">Lyric Editing</a>
+    <a href="#style-transfer">Timbre&Style Transfer</a>
+    <a href="#long-context">Long Context</a>
+    <a href="#other-abilities">Other Abilities</a>
+    <a href="#showcase">Production Showcase</a>
+  </nav>
+
+  <main class="container">
+    <!-- Abstract -->
+    <section id="abstract" class="section">
+      <div class="glass-panel">
+        <h2 class="section-title">Abstract</h2>
+        <p class="text-content">
+          While recent years have witnessed rapid progress in speech synthesis, open-source singing voice synthesis (SVS) systems still face significant barriers to industrial deployment, particularly in terms of robustness and zero-shot generalization. In this report, we introduce <strong>SoulX-Singer</strong>, a high-quality open-source SVS system designed with practical deployment considerations in mind. SoulX-Singer supports controllable singing generation conditioned on either symbolic musical scores (MIDI) or melodic representations, enabling flexible and expressive control in real-world production workflows. Trained on more than 40,000 hours of vocal data, the system supports Mandarin Chinese, English, and Cantonese, and consistently achieves state-of-the-art synthesis quality across languages under diverse musical conditions. Furthermore, to enable reliable evaluation of zero-shot SVS performance in practical scenarios, we construct SoulX-Singer-Eval, a dedicated benchmark with strict training–test disentanglement, facilitating systematic assessment in zero-shot settings.
+        </p>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section id="architecture" class="section">
+      <h2 class="section-title">Model Architecture</h2>
+      <div class="glass-panel architecture-panel">
+        <div class="figure">
+          <img src="static/images/overview.png" alt="SoulX-Singer Overview" class="architecture-img" />
+          <p class="figure-caption">Figure 1: The overall architecture of SoulX-Singer.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. Zero-Shot SVS -->
+    <section id="zero-shot-svs" class="section">
+      <h2 class="section-title">1. Zero-Shot SVS</h2>
+      
+      <!-- Mandarin Table -->
+      <h3 class="subsection-title"><span class="lang-badge">Mandarin</span> Comparison</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-info">Sample Info</th>
+              <th>StyleSinger</th>
+              <th>TCSinger</th>
+              <th>YingMusic-Singer</th>
+              <th>Vevosing</th>
+              <th>SoulX-Singer<br><small>(Melody-based)</small></th>
+              <th>SoulX-Singer<br><small>(Score-based)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">以身外身做梦中梦</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/stylesinger.wav"></audio></td> <!-- StyleSinger -->
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/tcsinger.wav"></audio></td> <!-- TCSinger -->
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/yingmusic-singer.wav"></audio></td> <!-- YingMusic -->
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/vevosing.wav"></audio></td> <!-- Vevosing -->
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/soulx-singer_melody.wav"></audio></td> <!-- SoulX (Mel) -->
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/给电影人的情书/soulx-singer_score.wav"></audio></td> <!-- SoulX (Score) -->
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">明明对你念念不忘 思前想后越发紧张</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/stylesinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/tcsinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/讲真的/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">卷起千堆雪</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/stylesinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/tcsinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/念奴娇/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">像我这样懦弱的人 凡事都要留几分</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/stylesinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/tcsinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Mandarin/像我这样的人/soulx-singer_score.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- English Table -->
+      <h3 class="subsection-title"><span class="lang-badge">English</span> Comparison</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-info">Sample Info</th>
+              <th>TCSinger</th>
+              <th>Vevosing</th>
+              <th>SoulX-Singer<br><small>(Melody-based)</small></th>
+              <th>SoulX-Singer<br><small>(Score-based)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">where the skies are blue to see you once again my love</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/English/My Love/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/English/My Love/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/My Love/tcsinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/My Love/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/My Love/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/My Love/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">i heard that you've settled down that you</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/English/Someone/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/English/Someone/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Someone/tcsinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Someone/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Someone/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Someone/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">every sha la la la every whoa ooh whoa still shines</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/English/Yesterday/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/English/Yesterday/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Yesterday/tcsinger.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Yesterday/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Yesterday/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/English/Yesterday/soulx-singer_score.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Cantonese Table -->
+      <h3 class="subsection-title"><span class="lang-badge">Cantonese</span> Comparison</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-info">Sample Info</th>
+              <th>SoulX-Singer<br><small>(Melody-based)</small></th>
+              <th>SoulX-Singer<br><small>(Score-based)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">马路戏院商店 天空海阔任你行</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">仍然紧守于身边 与你进退也共鸣</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">想与你一起 乘搭最早的班机</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">得不到多么好当得到不知怎算好<br>奢侈的一生天荒地老</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/soulx-singer_score.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. Lyric Editing -->
+    <section id="lyric-editing" class="section">
+      <h2 class="section-title">2. Lyric Editing</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-info" style="min-width: 400px;">Editing Info</th>
+              <th>YingMusic-Singer</th>
+              <th>Vevosing</th>
+              <th>SoulX-Singer<br><small>(Score-based)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample" style="color: #666; font-size: 0.9em;">
+                    <strong>Original:</strong> 原谅捧花的我盛装出席只为错过你
+                </div>
+                <div class="text-sample" style="border-left: 3px solid var(--accent); background: #eef2ff;">
+                    <strong>Modified:</strong> 思念藏心的我悄然离席只剩回忆你
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Ground Truth (Ref)</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/不再见/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Prompt</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/不再见/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/不再见/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/不再见/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/不再见/soulx-singer.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample" style="color: #666; font-size: 0.9em;">
+                    <strong>Original:</strong> 无法深情挽着你的手
+                </div>
+                <div class="text-sample" style="border-left: 3px solid var(--accent); background: #eef2ff;">
+                    <strong>Modified:</strong> 不能轻轻握住你心跳
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Ground Truth (Ref)</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/一千年以后/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Prompt</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/一千年以后/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/一千年以后/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/一千年以后/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/一千年以后/soulx-singer.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample" style="color: #666; font-size: 0.9em;">
+                    <strong>Original:</strong> a rush a glance a touch a dance a look in somebody's eyes
+                </div>
+                <div class="text-sample" style="border-left: 3px solid var(--accent); background: #eef2ff;">
+                    <strong>Modified:</strong> a spark a glow a kiss a show a stare beneath the skies
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Ground Truth (Ref)</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/City Of Stars/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Prompt</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/City Of Stars/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/City Of Stars/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/City Of Stars/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/City Of Stars/soulx-singer.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample" style="color: #666; font-size: 0.9em;">
+                    <strong>Original:</strong> i guess you didn't care and i guess i liked that and when i fell hard you took a step back
+                </div>
+                <div class="text-sample" style="border-left: 3px solid var(--accent); background: #eef2ff;">
+                    <strong>Modified:</strong> you knew i was there you knew i admired it but when i held on you pulled back and retired it
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Ground Truth (Ref)</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/I Knew You Were Trouble/groundtruth.wav"></audio>
+                </div>
+                <div class="audio-group">
+                    <span class="audio-label">Prompt</span>
+                    <audio controls preload="metadata" src="static/audios/singing_editing/I Knew You Were Trouble/prompt.wav"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/I Knew You Were Trouble/yingmusic-singer.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/I Knew You Were Trouble/vevosing.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_editing/I Knew You Were Trouble/soulx-singer.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. Style Transfer -->
+    <section id="style-transfer" class="section">
+      <h2 class="section-title">3. Timbre&Style Transfer</h2>
+      <div class="table-wrapper">
+        <table class="style-transfer-table">
+          <thead>
+            <tr>
+              <th class="col-info" style="min-width: 360px;">Case (Text)</th>
+              <th>Source</th>
+              <th>Prompt</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-info" rowspan="3">
+                <div class="text-sample">没那么简单：在周末晚上关上了手机舒服窝在沙发里</div>
+              </td>
+              <td class="col-model" rowspan="3"><audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/source.wav"></audio></td>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/lanyangyang_prompt.wav"></audio>
+                  <div class="audio-caption">（懒羊羊）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/lanyangyang_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/sunyanzi_prompt.wav"></audio>
+                  <div class="audio-caption">（孙燕姿）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/sunyanzi_soulxsinger.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/taylor_prompt.wav"></audio>
+                  <div class="audio-caption">（Taylor Swift）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/没那么简单/taylor_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-info" rowspan="3">
+                <div class="text-sample">隐形的翅膀：我知道我一直有双隐形的翅膀</div>
+              </td>
+              <td class="col-model" rowspan="3"><audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/source.wav"></audio></td>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/chinese_kid_prompt.wav"></audio>
+                  <div class="audio-caption">（中文 童声）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/chinese_kid_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/chinese_opera_prompt.wav"></audio>
+                  <div class="audio-caption">（中文 戏曲）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/chinese_opera_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/chinese_rap_prompt.wav"></audio>
+                  <div class="audio-caption">（中文 说唱）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/隐形的翅膀/chinese_rap_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-info" rowspan="3">
+                <div class="text-sample">who says：c'mon who says who says you're not perfect who says you're not worth it</div>
+              </td>
+              <td class="col-model" rowspan="3"><audio controls preload="metadata" src="static/audios/style_transfer/who says/source.wav"></audio></td>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/who says/english_hardcore_prompt.wav"></audio>
+                  <div class="audio-caption">（English Hardcore）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/who says/english_hardcore_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/who says/english_metal_prompt.wav"></audio>
+                  <div class="audio-caption">（English Metal）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/who says/english_metal_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-model">
+                <div class="audio-stack">
+                  <audio controls preload="metadata" src="static/audios/style_transfer/who says/english_rap_prompt.wav"></audio>
+                  <div class="audio-caption">（English Rap）</div>
+                </div>
+              </td>
+              <td class="col-model">
+                <audio controls preload="metadata" src="static/audios/style_transfer/who says/english_rap_soulx-singer.wav"></audio>
+                <div class="audio-caption" style="visibility: hidden;">占位符</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. Long Context -->
+    <section id="long-context" class="section">
+      <h2 class="section-title">4. Long Context Generation</h2>
+      
+      <div class="glass-panel">
+        <div class="player-container">
+          <div class="player-left" id="vinyl-wrapper">
+            <div class="vinyl-icon"></div>
+            <audio id="long-audio-player" controls style="margin-top:20px; width: 80%;" preload="metadata">
+                <source src="static/audios/long_context/修炼爱情/soulx-singer.wav" type="audio/wav">
+                Your browser does not support audio element.
+            </audio>
+            <div class="audio-group" style="margin-top: 12px; width: 80%;">
+              <span class="audio-label">Prompt</span>
+              <audio controls preload="metadata" src="static/audios/long_context/修炼爱情/prompt.wav" style="width: 100%;"></audio>
+            </div>
+             <p style="margin-top:10px; font-size: 0.9em; color:#666;">Playing: 修炼爱情 (Long Context)</p>
+          </div>
+          
+          <div class="lyrics-container" id="lyrics-box">
+             <!-- Lyrics will be injected by JS -->
+             <div class="lyric-line" data-time="0">Loading lyrics…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Other Abilities -->
+    <section id="other-abilities" class="section">
+      <h2 class="section-title">5. Other Abilities</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-info" style="min-width: 360px;">Case (Text)</th>
+              <th>Source</th>
+              <th>Prompt</th>
+              <th>Melody-based</th>
+              <th>Score-based</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">Humming to Singing: 我们总把人生想的太坏</div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming1/source.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming1/prompt.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming1/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming1/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">Humming to Singing: 会在这 一人留两人疚三人游</div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming2/source.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming2/prompt.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming2/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/humming2/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">Speech Prompt to Singing:  <br>跟着红尘跟随我浪迹一生 雨纷纷旧故里草木深</div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/speech/source.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/speech/prompt.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/speech/soux-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/speech/soulx-singer_score.wav"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">Singer? Rapper!: <br> 
+                  做着普通的工作
+                  在外漂泊思乡
+                  有多少人都希望
+                  自己的生活
+                  能过得好一点
+                  能改变自己的历史
+                  让父母的压力小一点
+                  每逢过节的时候
+                  少不了对父母的那份思念
+                  不能回家因为自己的梦想
+                  还没有实现</div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/rap/source.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/rap/prompt.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/rap/soulx-singer_melody.wav"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/other_abilities/rap/soulx-singer_score.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. Production Showcase -->
+    <section id="showcase" class="section">
+      <h2 class="section-title">Real-world AI Singer Showcase</h2>
+      <p class="section-desc">Explore AI-generated songs and covers produced using SoulX-Singer on major streaming platforms.</p>
+      
+      <h3 class="subsection-title" style="margin-top: 10px;">Soul Virtual Idol: Jiang Yu</h3>
+      <div class="showcase-grid">
+        <!-- Row 1: Virtual Idol Jiang Yu -->
+        <a href="https://c6.y.qq.com/base/fcgi-bin/u?__=zmkECNB5IleA" target="_blank" class="showcase-card">
+          <img src="static/images/jiangyu.jpg" alt="八小时时差" class="showcase-img" />
+          <div class="showcase-info">
+            <span class="showcase-title">八小时时差</span>
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 4px;">江屿</div>
+            <span class="showcase-platform">QQ Music ↗</span>
+          </div>
+        </a>
+        
+        <div class="showcase-card">
+          <video src="static/videos/八小时时差MV.mp4" controls class="showcase-img" style="object-fit: cover;"></video>
+          <div class="showcase-info">
+            <span class="showcase-title">八小时时差 MV</span>
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 4px;">江屿</div>
+            <span class="showcase-platform">Video Play</span>
+          </div>
+        </div>
+
+        <div class="showcase-card">
+          <video src="static/videos/怎叹MV.mp4" controls class="showcase-img" style="object-fit: cover;"></video>
+          <div class="showcase-info">
+            <span class="showcase-title">怎叹 MV</span>
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 4px;">江屿</div>
+            <span class="showcase-platform">Video Play</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Douyin AI Singer Operations</h3>
+      <div class="showcase-grid">
+        <!-- Row 2: Douyin AI Singers -->
+         <a href="https://v.douyin.com/qIB3wm560lM/" target="_blank" class="showcase-card">
+          <img src="static/images/realsinger1.jpg" alt="给未来的自己（Cover）" class="showcase-img" />
+          <div class="showcase-info">
+            <span class="showcase-title">给未来的自己（Cover）</span>
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 4px;">淋了一头雨</div>
+            <span class="showcase-platform">Douyin ↗</span>
+          </div>
+        </a>
+
+         <a href="https://v.douyin.com/jTEC_nuiBtU/" target="_blank" class="showcase-card">
+          <img src="static/images/realsinger2.jpg" alt="跳楼机 (Cover)" class="showcase-img" />
+          <div class="showcase-info">
+            <span class="showcase-title">跳楼机 (Cover)</span>
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 4px;">会唱歌的派总</div>
+            <span class="showcase-platform">Douyin ↗</span>
+          </div>
+        </a>
+
+        <a href="https://v.douyin.com/bX4vij6Wmbs/" target="_blank" class="showcase-card">
+          <img src="static/images/realsinger3.jpg" alt="苦瓜 (Cover)" class="showcase-img" />
+          <div class="showcase-info">
+            <span class="showcase-title">苦瓜 (Cover)</span>
+            <div style="font-size: 0.9rem; color: #555; margin-bottom: 4px;">乱缠</div>
+            <span class="showcase-platform">Douyin ↗</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>&copy; 2026 Soul AI Lab. All rights reserved.</div>
+    <div style="margin-top: 10px;">
+        <a href="#top">Back to Top</a>
+    </div>
+  </footer>
+
+  <script>
+    // Long Context Player Logic
+    const audio = document.getElementById('long-audio-player');
+    const vinyl = document.querySelector('.vinyl-icon');
+    const lyricsBox = document.getElementById('lyrics-box');
+    let lyricLines = [];
+    
+    // Sample Logic for Vinyl Spin
+    audio.addEventListener('play', () => {
+        document.getElementById('vinyl-wrapper').classList.add('playing');
+    });
+    audio.addEventListener('pause', () => {
+        document.getElementById('vinyl-wrapper').classList.remove('playing');
+    });
+
+    const parseSRT = (srtText) => {
+      const entries = [];
+      const blocks = srtText.replace(/\r/g, '').split('\n\n');
+      blocks.forEach(block => {
+        const lines = block.split('\n').filter(Boolean);
+        if (lines.length >= 2) {
+          const timeLine = lines[1];
+          const match = timeLine.match(/(\d\d):(\d\d):(\d\d),(\d\d\d)/);
+          if (!match) return;
+          const [, hh, mm, ss, ms] = match.map(Number);
+          const time = hh * 3600 + mm * 60 + ss + ms / 1000;
+          const text = lines.slice(2).join(' ');
+          if (text.trim()) {
+            entries.push({ time, text: text.trim() });
+          }
+        }
+      });
+      return entries;
+    };
+
+    const renderLyrics = (entries) => {
+      lyricsBox.innerHTML = '';
+      if (!entries.length) {
+        lyricsBox.innerHTML = '<div class="lyric-line" data-time="0">Lyrics unavailable.</div>';
+        lyricLines = Array.from(lyricsBox.querySelectorAll('.lyric-line'));
+        return;
+      }
+      entries.forEach(entry => {
+        const line = document.createElement('div');
+        line.className = 'lyric-line';
+        line.dataset.time = entry.time;
+        line.textContent = entry.text;
+        lyricsBox.appendChild(line);
+      });
+      lyricLines = Array.from(lyricsBox.querySelectorAll('.lyric-line'));
+      bindLyricClicks();
+    };
+
+    const bindLyricClicks = () => {
+      lyricLines.forEach(line => {
+        line.addEventListener('click', () => {
+          const time = parseFloat(line.getAttribute('data-time'));
+          audio.currentTime = time;
+          audio.play();
+        });
+      });
+    };
+
+    fetch('static/texts/long_context/修炼爱情/lyrics.srt')
+      .then(res => res.text())
+      .then(text => renderLyrics(parseSRT(text)))
+      .catch(() => renderLyrics([]));
+
+    // Lyric Sync
+    audio.addEventListener('timeupdate', () => {
+      const currentTime = audio.currentTime;
+      let activeLine = null;
+      for (const line of lyricLines) {
+        const time = parseFloat(line.getAttribute('data-time'));
+        if (time <= currentTime) activeLine = line;
+      }
+      if (activeLine) {
+        lyricLines.forEach(l => l.classList.remove('active'));
+        activeLine.classList.add('active');
+        const offset = activeLine.offsetTop - lyricsBox.offsetTop - (lyricsBox.clientHeight / 2) + (activeLine.clientHeight / 2);
+        lyricsBox.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    });
+
+    // Click line to jump
+    const bindLyricClicksOnce = () => {
+      if (lyricLines.length) bindLyricClicks();
+    };
+    bindLyricClicksOnce();
+
+    // Nav active state on scroll
+    const navLinks = Array.from(document.querySelectorAll('.nav a'));
+    const sections = Array.from(document.querySelectorAll('main section[id]'));
+    const setActiveNav = (id) => {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+      });
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              setActiveNav(entry.target.id);
+            }
+          });
+        },
+        { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
+      );
+      sections.forEach(section => observer.observe(section));
+    } else {
+      window.addEventListener('scroll', () => {
+        let currentId = sections[0]?.id;
+        sections.forEach(section => {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.4) {
+            currentId = section.id;
+          }
+        });
+        if (currentId) setActiveNav(currentId);
+      });
+    }
+
+    // Click interaction to spawn notes
+    document.addEventListener('click', (e) => {
+      // Avoid spawning if clicking on audio controls or links or interactive elements
+      if (['AUDIO', 'A', 'BUTTON', 'INPUT'].includes(e.target.tagName) || e.target.closest('a') || e.target.closest('audio')) return;
+
+      const notes = ['♪', '♫', '♩', '♬'];
+      const noteChar = notes[Math.floor(Math.random() * notes.length)];
+      
+      const note = document.createElement('div');
+      note.classList.add('click-note');
+      note.textContent = noteChar;
+      note.style.left = e.pageX + 'px';
+      note.style.top = e.pageY + 'px';
+      
+      // Randomize color slightly
+      const colors = ['#2563eb', '#ff0050', '#00f2ea', '#7c4dff', '#31c27c'];
+      note.style.color = colors[Math.floor(Math.random() * colors.length)];
+      
+      document.body.appendChild(note);
+      
+      // Remove after animation
+      setTimeout(() => {
+        note.remove();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
