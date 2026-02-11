@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <meta name="description" content="SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads">
+  <meta property="og:title" content="SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads"/>
+  <meta property="og:description" content="SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads"/>
+  <meta property="og:url" content="SoulX-FlashHead.github.io"/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+
+  <meta name="twitter:title" content="SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads">
+  <meta name="twitter:description" content="SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title> SoulX-FlashHead </title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index_style3.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [['$','$'], ['\\(','\\)']],
+          processEscapes: true
+      }
+  });
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="static/fullpage/fullpage.css" />
+
+    <script type="text/javascript" src="static/fullpage/fullpage.js"></script>
+
+    <style>
+      :root {
+        --intro-scale: 0;
+        --highlight-color: rgba(230, 223, 229, 0.8);
+        --accent-color: #ffffff;
+      }
+      body {
+        margin: 0;
+        font-family: "Outfit", sans-serif;
+        background: linear-gradient(180deg, #002111 0%, #002527 100%);
+        background-attachment: fixed;
+        color: #fff;
+      }
+      .section{
+        color:white
+      }
+      .section .title,
+      .title {
+        color: #fff !important;
+      }
+      #section0 a{
+        color:white
+      }
+      .my-arrow{
+        color:orange;
+        font-size: 60px;
+        padding-left:150px;
+        padding-right: 150px;
+        position: absolute;
+        top:20%
+      }
+      .myVideo{
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        top:0;
+        width: 100%;
+        height: 100%;
+        background-size: 100% 100%;
+         background-color: black; /* in case the video doesn't fit the whole page*/
+          background-image: none;
+          background-position: center center;
+          background-size: contain;
+           object-fit: cover; /*cover video background */
+           z-index:0;
+      }
+      .myVideo-overlap{
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        top:0;
+        width: 100%;
+        height: 100%;
+        background-size: 100% 100%;
+         background-color: rgba(0, 0, 0, 0.5); /* in case the video doesn't fit the whole page*/
+          background-image: none;
+          background-position: center center;
+          background-size: contain;
+           object-fit: cover; /*cover video background */
+           z-index:100;
+      }
+      .fp-slidesNav{
+        text-align: center;
+        color:orangered
+      }
+      .grid4 {
+        grid-template-columns: repeat(4, 1fr);
+        display: grid;
+        grid-gap: 16px;
+      }
+      .grid5 {
+        grid-template-columns: repeat(5, 1fr);
+        display: grid;
+        grid-gap: 16px;
+      }
+      .grid6 {
+        grid-template-columns: repeat(6, 1fr);
+        display: grid;
+        grid-gap: 6px;
+      }
+      /* Video Results 区块：铺满整页（大屏、小屏一致） */
+      #section1.section {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 100%;
+        box-sizing: border-box;
+      }
+      #section1 .section1-content {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      #section1 .hero-body {
+        flex-shrink: 0;
+        padding-top: 1rem;
+        padding-bottom: 0.5rem;
+      }
+      #section1 .hero-body .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      /* 网格填满剩余高度，行用 1fr 均分 */
+      #section1 .custom-video-grid {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: 1fr 1fr 24px 1fr 1fr;
+        gap: 12px;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto 50px auto;
+        padding: 10px 16px 24px;
+        box-sizing: border-box;
+      }
+      #section1 .v-item {
+        min-height: 0;
+        height: 100%;
+        aspect-ratio: auto;
+      }
+
+      .v-item {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border-radius: 6px;
+        background: #000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      }
+
+      .v-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* =========================================
+        LTX 布局 (Row 1-2)
+        结构：[小列] [大] [大] [小列]
+        ========================================= */
+
+      /* 1. 左侧小列 (占第1列) */
+      .custom-video-grid .v-item:nth-child(1) { grid-area: 1 / 1 / 2 / 2; } /* 左上 */
+      .custom-video-grid .v-item:nth-child(2) { grid-area: 2 / 1 / 3 / 2; } /* 左下 */
+
+      /* 2. 中间左大图 (占第2-3列，跨2行) */
+      .custom-video-grid .v-item:nth-child(3) { 
+        grid-area: 1 / 2 / 3 / 4; 
+      }
+
+      /* 3. 中间右大图 (占第4-5列，跨2行) */
+      .custom-video-grid .v-item:nth-child(4) { 
+        grid-area: 1 / 4 / 3 / 6; 
+      }
+
+      /* 4. 右侧小列 (占第6列) */
+      .custom-video-grid .v-item:nth-child(5) { grid-area: 1 / 6 / 2 / 7; } /* 右上 */
+      .custom-video-grid .v-item:nth-child(6) { grid-area: 2 / 6 / 3 / 7; } /* 右下 */
+
+
+      /* =========================================
+        WAN 布局 (Row 4-5) - 结构同上，向下平移
+        中间留空一行 (Row 3)
+        ========================================= */
+
+      /* WAN 标题或分隔占位 (Row 3) */
+      .custom-video-grid::before {
+          content: ''; 
+          grid-area: 3 / 1 / 4 / 7;
+          height: 40px;
+      }
+
+      /* 1. 左侧小列 */
+      .custom-video-grid .v-item:nth-child(7) { grid-area: 4 / 1 / 5 / 2; }
+      .custom-video-grid .v-item:nth-child(8) { grid-area: 5 / 1 / 6 / 2; }
+
+      /* 2. 中间左大图 */
+      .custom-video-grid .v-item:nth-child(9) { 
+        grid-area: 4 / 2 / 6 / 4; 
+      }
+
+      /* 3. 中间右大图 */
+      .custom-video-grid .v-item:nth-child(10) { 
+        grid-area: 4 / 4 / 6 / 6; 
+      }
+
+      /* 4. 右侧小列 */
+      .custom-video-grid .v-item:nth-child(11) { grid-area: 4 / 6 / 5 / 7; }
+      .custom-video-grid .v-item:nth-child(12) { grid-area: 5 / 6 / 6 / 7; }
+
+      /* ========== 响应式布局：自适应屏幕 ========== */
+      /* 平板 */
+      @media screen and (max-width: 1024px) {
+        .my-arrow {
+          font-size: 40px;
+          padding-left: 60px;
+          padding-right: 60px;
+        }
+        #section1 .custom-video-grid {
+          padding-left: 12px;
+          padding-right: 12px;
+          gap: 8px;
+        }
+        .grid6 {
+          grid-template-columns: repeat(3, 1fr);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        .grid6 p { font-size: 22px !important; }
+        .section .container { padding-left: 20px; padding-right: 20px; }
+      }
+
+      /* 小屏平板 / 大手机 */
+      @media screen and (max-width: 768px) {
+        .my-arrow {
+          font-size: 28px;
+          padding-left: 24px;
+          padding-right: 24px;
+          top: 15%;
+        }
+        .hero-body .container { padding-left: 16px; padding-right: 16px; }
+        .hero-body img[width="20%"] { width: 40%; max-width: 180px; }
+        .publication-title { font-size: 1.5rem !important; line-height: 1.3; }
+        .publication-authors { font-size: 14px; }
+        .author-block { display: inline-block; padding: 0 2px; }
+        .publication-links { flex-wrap: wrap; justify-content: center; }
+        .link-block { margin: 4px 6px; }
+        .link-block a { font-size: 14px; }
+        .section .container { padding-left: 16px; padding-right: 16px; }
+        .section .title.is-2 { font-size: 1.5rem; }
+        .section p { font-size: 14px; }
+        /* 视频网格：2 列 6 行，铺满整页 */
+        #section1 .custom-video-grid {
+          grid-template-columns: repeat(2, 1fr);
+          grid-template-rows: repeat(6, 1fr);
+          padding-left: 10px;
+          padding-right: 10px;
+          gap: 6px;
+        }
+        .custom-video-grid::before {
+          display: none;
+        }
+        .custom-video-grid .v-item:nth-child(1),
+        .custom-video-grid .v-item:nth-child(2),
+        .custom-video-grid .v-item:nth-child(3),
+        .custom-video-grid .v-item:nth-child(4),
+        .custom-video-grid .v-item:nth-child(5),
+        .custom-video-grid .v-item:nth-child(6),
+        .custom-video-grid .v-item:nth-child(7),
+        .custom-video-grid .v-item:nth-child(8),
+        .custom-video-grid .v-item:nth-child(9),
+        .custom-video-grid .v-item:nth-child(10),
+        .custom-video-grid .v-item:nth-child(11),
+        .custom-video-grid .v-item:nth-child(12) {
+          grid-area: auto;
+        }
+        .grid6 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+        .grid6 p { font-size: 16px !important; }
+        #section3 video { max-height: 50vh; object-fit: contain; }
+      }
+
+      /* 手机 */
+      @media screen and (max-width: 480px) {
+        .my-arrow {
+          font-size: 22px;
+          padding-left: 12px;
+          padding-right: 12px;
+          top: 12%;
+        }
+        .hero-body img[width="20%"] { width: 50%; max-width: 140px; }
+        .publication-title { font-size: 1.2rem !important; }
+        .publication-authors { font-size: 12px; }
+        .eql-cntrb { font-size: 11px; }
+        .link-block a { font-size: 12px; }
+        .section .title.is-2 { font-size: 1.25rem; }
+        .section p { font-size: 13px; }
+        #section1 .custom-video-grid { gap: 4px; padding-left: 6px; padding-right: 6px; padding-bottom: 16px; }
+        .grid6 { grid-template-columns: 1fr; padding-left: 8px; padding-right: 8px; }
+        .grid6 p { font-size: 14px !important; }
+      }
+      /* 新增：宽屏网格布局 */
+      .wide-grid {
+        display: grid;
+        /* 默认大屏 4 列 */
+        grid-template-columns: repeat(4, 1fr); 
+        grid-gap: 20px;       /* 视频之间的间距 */
+        width: 100%;
+        max-width: 85%;       /* 关键点：占据屏幕宽度的 95%，比之前的固定像素或默认更宽 */
+        margin: 0 auto;       /* 居中显示 */
+      }
+
+      /* 视频容器样式复用，确保比例不变 */
+      .wide-grid .v-item {
+        position: relative;
+        width: 100%;
+        /* 如果您希望保持特定比例（如16:9），可以取消下面的 auto 并设置 padding-bottom */
+        /* 这里保持 auto 配合 display block 即可自适应视频原比例 */
+        aspect-ratio: auto; 
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      }
+
+      .wide-grid .v-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* 响应式适配：中等屏幕变 2 列 */
+      @media screen and (max-width: 1024px) {
+        .wide-grid {
+          grid-template-columns: repeat(2, 1fr);
+          max-width: 96%; /* 平板上几乎全宽 */
+          padding: 0 10px;
+        }
+      }
+
+      /* 响应式适配：手机屏幕变 1 列 */
+      @media screen and (max-width: 480px) {
+        .wide-grid {
+          grid-template-columns: 1fr;
+          padding: 0 5px;
+        }
+      }
+      /* 针对 Short Video Results (section1) 的调整 */
+      #section1 .custom-video-grid {
+        /* 1. 增加宽度限制 */
+        max-width: 85% !important; /* 原来是 1200px，现在改为屏幕宽度的 95% */
+        
+        /* 2. 保持居中 (已有 margin: 0 auto... 但为了保险可以再写一次) */
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 可选：如果在超大屏上格子变得太大，可以微调间距 */
+      @media screen and (min-width: 1600px) {
+        #section1 .custom-video-grid {
+          gap: 20px; /* 拉大一点间距让画面更舒展 */
+        }
+      }
+      /* 通用的宽屏容器 */
+      .wide-container {
+        width: 100%;
+        max-width: 85%; /* 与其他部分保持一致，占据屏幕95%宽度 */
+        margin: 0 auto; /* 居中 */
+      }
+
+      /* 针对标签文字大小的响应式调整（可选） */
+      /* 防止在大屏上文字过大，或在小屏上文字过大导致换行 */
+      @media screen and (max-width: 1400px) {
+        .grid6 p {
+          font-size: 20px !important; /* 屏幕稍小时减小字号 */
+        }
+      }
+      @media screen and (max-width: 768px) {
+        .grid6 p {
+          font-size: 14px !important; /* 手机上更小 */
+        }
+      }
+      /* 2. (建议新增) 针对宽屏下文字的优化 */
+      /* 当容器变得很宽时，图片变宽很好看，但纯文字如果一行几百个字会很难读。
+        这里限制了段落的最大阅读宽度，但保持左对齐，或者您可以去掉 max-width 让文字也全宽 */
+      .wide-container p {
+        max-width: 1600px; /* 限制文字行的最大宽度，避免眼球移动太累 */
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 3. 图片自适应 */
+      .wide-container img {
+        max-width: 78%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+      /* 针对 Section 6 (Dataset) 单独设置为 80% */
+      #section6 .wide-container {
+        max-width: 100% !important; /* 强制覆盖掉默认的 95% */
+      }
+    </style>
+
+  <script src="static/js/index.js"></script>
+</head>
+<body>
+
+
+  <div id="fullpage">
+
+    <div class="section active" id="section0">
+
+        <div class="myVideo-overlap">
+        </div>
+        <video class="myVideo" loop muted data-autoplay playsinline>
+          <source src="static/videos/teaser_15s.mp4" type="video/mp4">
+          <source src="imgs/flowers.webm" type="video/webm">
+        </video>
+
+        <div class="hero-body" style="position:relative; z-index: 999">
+          <div class="container">
+            <img width="20%" style="display: block; margin:0 auto" src="static/images/flashhead_logo_mini.png"/>
+            <h1 class="is-1 publication-title" style="text-align: center;">
+              <!-- <span style="text-shadow: 10px 0px 5px blue;"> -->
+                <!-- <span style="color:red;opacity:0.5">StereoCrafter:</span> -->
+              <!-- </span> -->
+              Oracle-guided Generation of Infinite Real-time Streaming Talking Heads
+            </h1>
+            <div class="columns is-centered">
+              <div class="column has-text-centered">
+                <div class="is-size-5 publication-authors">
+                  <!-- Paper authors -->
+                  <br/>
+                  <span class="author-block">
+                    <a href="https://jiayoujiayoujiayoua.github.io/" target="_blank">Tan Yu</a><sup>*</sup></span>
+                  <span class="author-block">
+                    <a href="https://qianqiaoai.github.io/" target="_blank">Qian Qiao</a><sup>*,</sup><sup><i class="fas fa-envelope" style="margin-left: 5px; color: #555;"></i></sup></span>
+                  <span class="author-block">
+                    <a href="https://openreview.net/profile?id=%7ELe_Shen3" target="_blank">Le Shen</a><sup>*</sup></span>
+                  <span class="author-block">
+                    <a href="#" target="_blank">Ke Zhou</a></span>
+                  <br>
+                  
+                  <span class="author-block">
+                    <a href="" target="_blank">Jincheng Hu</a></span>
+                  <span class="author-block">
+                    <a href="" target="_blank">Dian Sheng</a></span>
+                  <span class="author-block">
+                    <a href="" target="_blank">Bo Hu</a></span>
+                  <span class="author-block">
+                    <a href="" target="_blank">Haoming Qin</a></span>
+                  <span class="author-block">
+                    <a href="" target="_blank">Jun Gao</a></span>
+                  <span class="author-block">
+                    <a href="" target="_blank">Changhai Zhou</a></span>
+                  <span class="author-block">
+                    <a href="#" target="_blank">Shunshun Yin</a></span>
+                  <span class="author-block">
+                    <a href="" target="_blank">Siyuan Liu</a><sup>#,</sup><sup><i class="fas fa-envelope" style="margin-left: 5px; color: #555;"></i></sup></span>
+                
+                  </div>
+
+                <br/>
+
+                <div class="publication-authors">
+                    <!-- <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span> -->
+                    <span class="eql-cntrb"><sup>*</sup>Equal Contribution, <sup><i class="fas fa-envelope" style="margin-left: 5px; color: #555;"></i></sup>Corresponding Author,  <sup>#</sup>Project Leader</span>
+                    <br/>
+                    <span class="author-block" style="font-size: 18px;">AIGC Team, Soul AI Lab</span>
+                    <!-- ; &nbsp Zhejiang University; &nbsp Fudan University; &nbsp Donghua University -->
+                </div>
+                <br/>
+
+                <div class="column has-text-centered">
+                  <div class="publication-links">
+                        <!-- Arxiv PDF link -->
+                    <span class="link-block">
+                      <a href="https://arxiv.org/abs/2602.07449" target="_blank" class="external-link ">
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Technique Report</span>
+                    </a>
+                  </span>
+
+                <!-- Github link -->
+                <span class="link-block">
+                  <a href="https://github.com/SoulX-FlashHead" target="_blank" class="external-link ">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+                </span>
+
+            <span class="link-block">
+              <a href="#" target="_blank"
+              class="external-link ">
+              <span class="icon">
+                <img src="./static/icon/hf_logo.svg" width="20">
+              </span>
+              <span>Checkpoints</span>
+            </a>
+          </span>
+
+          <!-- Dataset hf Link -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/Soul-AILab/VividHead" target="_blank"
+                class="external-link ">
+                <span class="icon">
+                  <img src="./static/icon/hf_data.svg" width="18">
+                </span>
+                <span>Dataset</span>
+              </a>
+            </span>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+
+      <div class="section" id="section4">
+        <div class="hero-body">
+            <div class="wide-container">
+                <h2 class="title is-2">Real-time Interaction Demo</h2>
+                <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; line-height: 1.6;">
+                    We introduce the real-time streaming video generation model SoulX-FlashHead. This model features 1.3B parameters and adopts a two-stage training scheme of Streaming-Aware Spatiotemporal Pre-training and Oracle-Guided Bidirectional Distillation. 
+                    <div class="columns is-centered has-text-centered">
+                      <div class="column is-four-fifths">
+                        <div class="publication-video" style="display: flex; gap: 30px; justify-content: center; align-items: flex-start;">
+                          <video id="teaser" autoplay controls loop playsinline muted style="width: 49%; height: auto;">
+                            <source src="static/examples/demo_hold.mp4" type="video/mp4">
+                          </video>
+                          <video id="teaser2" autoplay controls loop playsinline muted style="width: 49%; height: auto;">
+                            <source src="static/examples/demo_hold.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
+                    </div>
+                  </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="section5">
+        <div class="hero-body">
+            <div class="wide-container">
+                <h2 class="title is-2">Overall Framework of SoulX-FlashHead.</h2>
+                <div style="text-align: center;">
+                    <img width="100%" src="static/images/fh_pipe.png" alt="Framework overview"/>
+                </div>
+                <br>
+                <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem;">
+                    (a) Stage 1: Streaming-Aware Spatiotemporal Pre-training. We employ a Temporal Audio Context Cache to stabilize feature extraction from short streaming audio and utilize channel-wise concatenation for robust reference image injection. (b) Stage 2: Oracle-Guided Bidirectional Distillation. To mitigate error accumulation, the Student generates autoregressively conditioned on its own historical predictions, while the Teacher utilizes Ground Truth motion frames as an "Oracle" guide. The model is optimized via a Stochastic Truncation Strategy using DMD and latent regression losses.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="section6">
+        <div class="hero-body">
+            <div class="wide-container">
+                <h2 class="title is-2">VividHead Dataset Construction</h2>
+                <div style="text-align: center;">
+                    <img width="100%" src="static/images/data_pipe.png" alt="Data pipeline"/>
+                </div>
+                <br>
+                <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem;">
+                    VividHead consists of 330,000 high-quality short clips (3s--60s) totaling 782 hours. Each sample features: (i) $512\times 512$ resolution image sequences; (ii) strictly time-aligned speech audio; and (iii) rich metadata including language, ethnicity, and age. We strictly limit samples to those containing a single visible speaker with an active head region.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+      <div class="section" id="section3">
+        <div class="hero-body">
+          <div class="container">
+            <h2 class="title is-2">Comparison with Other Methods</h2>
+            <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; text-align: center;">
+              We further evaluate our model on the challenging long video generation task (60 seconds at 25 fps) and compare it with SOTA methods. 
+              <!-- <br/> -->
+              Our model maintains high-fidelity generation capabilities throughout the entire duration, covering most practical application scenarios. 
+              <!-- <br/> -->
+              Specifically, our method achieves superior long-term consistency without error accumulation. Furthermore, compared to models based on abstract motion representations such as Ditto and SadTalker, our method demonstrates better lip-sync consistency. Notably, SadTalker fails to maintain the structural connection between the headgear and the subject during motion due to the lack of a holistic representation, whereas our method preserves robust holistic consistency.
+            </p>
+          </div>
+        </div>
+        <div class="wide-container">
+          <div style="width: 100%; border-radius: 16px; overflow: hidden; background: #1a2820;">
+            <video autoplay controls loop playsinline muted style="width: 100%; display: block;">
+              <source src="static/examples/final_wan_results.mp4" type="video/mp4">
+            </video>
+          </div>
+          
+          <div class="grid6" style="margin-top: 8px;">
+            <div style="text-align: center;">
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ours-Pro</p>
+            </div>
+            <div style="text-align: center;">
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ours-Lite</p>
+            </div>
+            <div style="text-align: center;">
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">SadTalker</p>
+            </div>
+            <div style="text-align: center;">
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ditto</p>
+            </div>
+            <div style="text-align: center;">
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Hallo3</p>
+            </div>
+            <div style="text-align: center;">
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">EchoMimic_V3</p>
+            </div>
+          </div>
+          
+        </div>
+        <br/>
+      </div>
+
+
+
+      <div class="section" id="section1">
+        <div class="section1-content">
+        <div class="hero-body" >
+          <div class="container">
+            <h2 class="title is-2">Short Video Results</h2>
+            <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; text-align: center;">
+              Top: FlashHead-Lite; Bottom: FlashHead-Pro.
+            </p>
+          </div>
+        </div>
+        <div class="custom-video-grid">
+          <div class="v-item ltx-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/chengdu_ltx_16.mp4"></video> </div>
+          <div class="v-item ltx-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/luoxiang_ltx_14.mp4"></video> </div>
+          <div class="v-item ltx-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/kennidi_ltx_10.mp4"></video> </div>
+          <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_ltx_12.mp4"></video> </div>
+          <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/qitiandasheng_ltx_5s.mp4"></video> </div>
+          <div class="v-item ltx-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_ltx_11s.mp4"></video> </div>
+          
+          <div class="v-item wan-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/chengdu_wan_16.mp4"></video> </div>
+          <div class="v-item wan-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/luoxiang_wan_14.mp4"></video> </div>
+          <div class="v-item wan-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/kennidi_wan_10.mp4"></video> </div>
+          <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_wan_12.mp4"></video> </div>
+          <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/qitiandasheng_wan_5s.mp4"></video> </div>
+          <div class="v-item wan-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_wan_11s.mp4"></video> </div>
+        </div>
+        </div>
+      </div>
+
+
+      <div class="section" id="section2"> <div class="section1-content">
+        <div class="hero-body">
+          <div class="container">
+            <h2 class="title is-2">Long Video Results</h2>
+            <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; text-align: center;">
+              Top: FlashHead-Lite; Bottom: FlashHead-Pro.
+            </p>
+          </div>
+        </div>
+        
+        <div class="wide-grid">
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/einstein_ltx_41s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_ltx_17s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/heben_ltx_45s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/yunii_ltx.mp4"></video> </div>
+        </div>
+        <br/>
+        <div class="wide-grid">
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/einstein_wan_41s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_wan_17s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/heben_wan_45s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/yuni_wan.mp4"></video> </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="section3">
+      <div class="hero-body">
+      <div class="container is-max-desktop">
+        <h2 class="title is-2">Ethics Statement</h2>
+        <p style="color:rgb(252, 252, 252);text-align:justify; font-size: 1.1rem;">
+          This research aims to advance digital human synthesis for beneficial applications. We confirm that all datasets utilized in this study are derived from publicly accessible academic repositories. The visual demonstrations presented in this report are fully synthetic and do not contain the Personally Identifiable Information (PII) of private individuals.
+          <br/>
+          We acknowledge the dual-use nature of high-fidelity video generation technology and the potential risks associated with its misuse, such as the creation of deepfakes or the spread of misinformation. We firmly condemn any malicious application of this technology and advocate for the principles of Responsible AI. To mitigate these risks, we support the development of robust forgery detection algorithms and the implementation of invisible watermarking mechanisms to ensure content transparency and traceability. We remain committed to adhering to ethical guidelines and ensuring that our contributions promote the safe and positive evolution of the field.
+        </p>
+        <h2 class="title is-2">Citations</h2>
+        <h1>BibTeX</h1>
+    <pre style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; overflow-x: auto;"><code style="color: #b9bbc6; font-size: 14px;">@misc{yu2026soulxflashheadoracleguidedgenerationinfinite,
+      title={SoulX-FlashHead: Oracle-guided Generation of Infinite Real-time Streaming Talking Heads}, 
+      author={Tan Yu and Qian Qiao and Le Shen and Ke Zhou and Jincheng Hu and Dian Sheng and Bo Hu and Haoming Qin and Jun Gao and Changhai Zhou and Shunshun Yin and Siyuan Liu},
+      year={2026},
+      eprint={2602.07449},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2602.07449}, 
+}</code></pre>
+        <p style="color: rgb(255, 255, 255); margin-top: 50px">
+          This page was built using the <a  style="color: rgb(255, 254, 254);" href="https://github.com/vinthony/project-page-template">modification version</a> of <a style="color: rgb(255, 254, 254);" href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> from <a style="color: rgb(255, 255, 255);" href="https://github.com/vinthony">vinthony</a>.
+          You are free to borrow the of this website, we just ask that you link back to this page in the footer. This website is licensed under a <a  style="color: rgb(255, 255, 255);" rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+          Commons Attribution-ShareAlike 4.0 International License</a>.
+        </p>
+      </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Statcounter tracking code -->
+
+<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+    <script type="text/javascript">
+      var myFullpage = new fullpage('#fullpage', {
+        verticalCentered: true,
+        controlArrows: true,
+        controlArrowsHTML: [
+            '<div class="my-arrow"><i class="fas fa-arrow-alt-circle-left"></i></i></div>',
+            '<div class="my-arrow"><i class="fas fa-arrow-alt-circle-right"></i></div>',
+        ],
+        navigation:true,
+        slidesNavigation: true,
+      });
+    </script>
+
+  </body>
+  </html>
