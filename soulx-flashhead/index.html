@@ -635,10 +635,10 @@
             <h2 class="title is-2">Comparison with Other Methods</h2>
             <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; text-align: center;">
               We further evaluate our model on the challenging long video generation task (60 seconds at 25 fps) and compare it with SOTA methods. 
-              <!-- <br/> -->
               Our model maintains high-fidelity generation capabilities throughout the entire duration, covering most practical application scenarios. 
-              <!-- <br/> -->
-              Specifically, our method achieves superior long-term consistency without error accumulation. Furthermore, compared to models based on abstract motion representations such as Ditto and SadTalker, our method demonstrates better lip-sync consistency. Notably, SadTalker fails to maintain the structural connection between the headgear and the subject during motion due to the lack of a holistic representation, whereas our method preserves robust holistic consistency.
+              The following video demonstrates the performance of different methods and the comparison of their FPS on a single NVIDIA RTX 4090 GPU. 
+              Specifically, our method achieves superior long-term consistency without error accumulation. Furthermore, compared to models based on abstract motion representations such as Ditto and SadTalker, our method demonstrates better lip-sync consistency. 
+              Notably, SadTalker fails to maintain the structural connection between the headgear and the subject during motion due to the lack of a holistic representation, whereas our method preserves robust holistic consistency.
             </p>
           </div>
         </div>
@@ -651,22 +651,22 @@
           
           <div class="grid6" style="margin-top: 8px;">
             <div style="text-align: center;">
-              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ours-Pro</p>
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ours-Pro (10.81 FPS)</p>
             </div>
             <div style="text-align: center;">
-              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ours-Lite</p>
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ours-Lite (96.00 FPS)</p>
             </div>
             <div style="text-align: center;">
-              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">SadTalker</p>
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">SadTalker (2.17 FPS)</p>
             </div>
             <div style="text-align: center;">
-              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ditto</p>
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Ditto (45.04 FPS)</p>
             </div>
             <div style="text-align: center;">
-              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Hallo3</p>
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">Hallo3 (0.16 FPS)</p>
             </div>
             <div style="text-align: center;">
-              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">EchoMimic_V3</p>
+              <p style="font-weight: 600; color: #fff; margin: 0; font-size: 30px;">EchoMimic_V3 (0.81 FPS)</p>
             </div>
           </div>
           
@@ -676,7 +676,7 @@
 
 
 
-      <div class="section" id="section1">
+      <!-- <div class="section" id="section1">
         <div class="section1-content">
         <div class="hero-body" >
           <div class="container">
@@ -729,9 +729,63 @@
           <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_wan_17s.mp4"></video> </div>
         </div>
       </div>
+    </div> -->
+
+    <div class="section" id="section1">
+      <div class="section1-content">
+      <div class="hero-body" >
+        <div class="container">
+          <h2 class="title is-2">Short Video Results</h2>
+          <p style="color:rgb(255, 255, 255); text-align: center; font-size: 1.8rem; font-weight: bold;">
+            Top: FlashHead-Pro; Bottom: FlashHead-Lite.
+          </p>
+        </div>
+      </div>
+      <div class="custom-video-grid">
+        <div class="v-item wan-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/chengdu_wan_16.mp4"></video> </div>
+        <div class="v-item wan-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/luoxiang_wan_14.mp4"></video> </div>
+        <div class="v-item wan-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_wan_11s.mp4"></video> </div>
+        <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/xtt_wan.mp4"></video> </div>
+        <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/qitiandasheng_wan_5s.mp4"></video> </div>
+        <div class="v-item wan-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_wan_12.mp4"></video> </div>
+
+        <div class="v-item ltx-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/chengdu_ltx_16.mp4"></video> </div>
+        <div class="v-item ltx-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/luoxiang_ltx_14.mp4"></video> </div>
+        <div class="v-item ltx-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_ltx_11s.mp4"></video> </div>
+        <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/xtt_ltx.mp4"></video> </div>
+        <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/qitiandasheng_ltx_5s.mp4"></video> </div>
+        <div class="v-item ltx-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_ltx_12.mp4"></video> </div>
+      </div>
+      </div>
     </div>
 
-    
+
+    <div class="section" id="section2"> <div class="section1-content">
+      <div class="hero-body">
+        <div class="container">
+          <h2 class="title is-2">Long Video Results</h2>
+          <p style="color:rgb(255, 255, 255); text-align: center; font-size: 1.8rem; font-weight: bold;">
+            Top: FlashHead-Lite; Bottom: FlashHead-Pro.
+          </p>
+        </div>
+      </div>
+      
+      <div class="wide-grid">
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/einstein_wan_41s.mp4"></video> </div>
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/guitar_wan.mp4"></video> </div>
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/heben_wan_45s.mp4"></video> </div>
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_wan_17s.mp4"></video> </div>
+      </div>
+      <br/>
+      <div class="wide-grid">
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/einstein_ltx_41s.mp4"></video> </div>
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/guitar_ltx.mp4"></video> </div>
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/heben_ltx_45s.mp4"></video> </div>
+        <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_ltx_17s.mp4"></video> </div>
+      </div>
+    </div>
+  </div>
+
     <div class="section" id="section3">
       <div class="hero-body">
       <div class="container is-max-desktop">
