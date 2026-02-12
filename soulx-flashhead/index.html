@@ -529,7 +529,7 @@
                       <span class="icon">
                         <i class="fas fa-file-pdf"></i>
                       </span>
-                      <span>Technique Report</span>
+                      <span>Technical Report</span>
                     </a>
                   </span>
 
@@ -544,7 +544,7 @@
                 </span>
 
             <span class="link-block">
-              <a href="#" target="_blank"
+              <a href="https://huggingface.co/Soul-AILab/SoulX-FlashHead-1_3B" target="_blank"
               class="external-link ">
               <span class="icon">
                 <img src="./static/icon/hf_logo.svg" width="20">
@@ -578,20 +578,22 @@
             <div class="wide-container">
                 <h2 class="title is-2">Real-time Interaction Demo</h2>
                 <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; line-height: 1.6;">
-                    We introduce the real-time streaming video generation model SoulX-FlashHead. This model features 1.3B parameters and adopts a two-stage training scheme of Streaming-Aware Spatiotemporal Pre-training and Oracle-Guided Bidirectional Distillation. 
+                    <!-- We introduce the real-time streaming video generation model SoulX-FlashHead. This model features 1.3B parameters and adopts a two-stage training scheme of Streaming-Aware Spatiotemporal Pre-training and Oracle-Guided Bidirectional Distillation.  -->
+                    SoulX-FlashHead is a unified 1.3B-parameter framework designed for high-fidelity, infinite-length, and real-time streaming portrait video generation. By integrating Streaming-Aware Spatiotemporal Pre-training and Oracle-Guided Bidirectional Distillation, it ensures robust feature extraction from short audio fragments while eliminating identity drift in long sequences. Trained on our 782-hour VividHead dataset, the model achieves state-of-the-art performance across HDTF and VFHQ benchmarks. Notably, our Lite variant delivers an ultra-fast inference speed of 96 FPS on a single RTX 4090, facilitating seamless, low-latency digital human interactions.
+                    <br/>
+                </p>
                     <div class="columns is-centered has-text-centered">
                       <div class="column is-four-fifths">
                         <div class="publication-video" style="display: flex; gap: 30px; justify-content: center; align-items: flex-start;">
-                          <video id="teaser" autoplay controls loop playsinline muted style="width: 49%; height: auto;">
-                            <source src="static/examples/demo_hold.mp4" type="video/mp4">
+                          <video id="teaser" autoplay controls loop playsinline muted style="width: 90%; height: auto;">
+                            <source src="static/examples/demo.mp4" type="video/mp4">
                           </video>
-                          <video id="teaser2" autoplay controls loop playsinline muted style="width: 49%; height: auto;">
+                          <!-- <video id="teaser2" autoplay controls loop playsinline muted style="width: 49%; height: auto;">
                             <source src="static/examples/demo_hold.mp4" type="video/mp4">
-                          </video>
+                          </video> -->
                         </div>
                       </div>
                     </div>
-                  </p>
             </div>
         </div>
     </div>
@@ -679,7 +681,7 @@
         <div class="hero-body" >
           <div class="container">
             <h2 class="title is-2">Short Video Results</h2>
-            <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; text-align: center;">
+            <p style="color:rgb(255, 255, 255); text-align: left; font-size: 1.4rem;">
               Top: FlashHead-Lite; Bottom: FlashHead-Pro.
             </p>
           </div>
@@ -687,17 +689,17 @@
         <div class="custom-video-grid">
           <div class="v-item ltx-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/chengdu_ltx_16.mp4"></video> </div>
           <div class="v-item ltx-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/luoxiang_ltx_14.mp4"></video> </div>
-          <div class="v-item ltx-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/kennidi_ltx_10.mp4"></video> </div>
-          <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_ltx_12.mp4"></video> </div>
+          <div class="v-item ltx-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_ltx_11s.mp4"></video> </div>
+          <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/souxflashhead/static/examples/short/xtt_ltx.mp4"></video> </div>
           <div class="v-item ltx-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/qitiandasheng_ltx_5s.mp4"></video> </div>
-          <div class="v-item ltx-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_ltx_11s.mp4"></video> </div>
+          <div class="v-item ltx-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_ltx_12.mp4"></video> </div>
           
           <div class="v-item wan-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/chengdu_wan_16.mp4"></video> </div>
           <div class="v-item wan-small"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/luoxiang_wan_14.mp4"></video> </div>
-          <div class="v-item wan-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/kennidi_wan_10.mp4"></video> </div>
-          <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_wan_12.mp4"></video> </div>
+          <div class="v-item wan-tall">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_wan_11s.mp4"></video> </div>
+          <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/souxflashhead/static/examples/short/xtt_wan.mp4"></video> </div>
           <div class="v-item wan-tiny">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/qitiandasheng_wan_5s.mp4"></video> </div>
-          <div class="v-item wan-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/dicaprio_wan_11s.mp4"></video> </div>
+          <div class="v-item wan-wide">  <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/short/podcast_sichuan_wan_12.mp4"></video> </div>
         </div>
         </div>
       </div>
@@ -707,7 +709,7 @@
         <div class="hero-body">
           <div class="container">
             <h2 class="title is-2">Long Video Results</h2>
-            <p style="color:rgb(255, 255, 255);text-align:justify; font-size: 1.1rem; text-align: center;">
+            <p style="color:rgb(255, 255, 255); text-align: left; font-size: 1.4rem;">
               Top: FlashHead-Lite; Bottom: FlashHead-Pro.
             </p>
           </div>
@@ -715,16 +717,16 @@
         
         <div class="wide-grid">
           <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/einstein_ltx_41s.mp4"></video> </div>
-          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_ltx_17s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/souxflashhead/static/examples/long/guitar_ltx.mp4"></video> </div>
           <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/heben_ltx_45s.mp4"></video> </div>
-          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/yunii_ltx.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_ltx_17s.mp4"></video> </div>
         </div>
         <br/>
         <div class="wide-grid">
           <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/einstein_wan_41s.mp4"></video> </div>
-          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_wan_17s.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/souxflashhead/static/examples/long/guitar_wan.mp4"></video> </div>
           <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/heben_wan_45s.mp4"></video> </div>
-          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/yuni_wan.mp4"></video> </div>
+          <div class="v-item"> <video autoplay controls loop muted><source src="https://github.com/Soul-AILab/Soul-AILab.github.io/raw/refs/heads/main/soulx-flashhead/static/examples/long/handou_wan_17s.mp4"></video> </div>
         </div>
       </div>
     </div>
