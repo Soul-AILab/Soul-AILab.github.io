@@ -66,14 +66,26 @@
 
      <div class="links">
       <a href="https://github.com/Soul-AILab/SoulX-Singer/blob/main/assets/technical-report.pdf" target="_blank" rel="noopener" class="chip">
-        <span class="icon">📄</span> Paper
+          <span class="icon">📄</span> Technical Report
       </a>
+        <a href="https://arxiv.org/abs/2602.07803v1" target="_blank" rel="noopener" class="chip">
+            <span class="icon">🟥</span> Arxiv
+        </a>
       <a href="https://github.com/Soul-AILab/SoulX-Singer" target="_blank" rel="noopener" class="chip">
-        <span class="icon">🐙</span> Code
+          <span class="icon">🐙</span> Github
       </a>
       <a href="https://huggingface.co/Soul-AILab/SoulX-Singer" target="_blank" rel="noopener" class="chip">
         <span class="icon">🤗</span> HuggingFace
       </a>
+        <a href="https://huggingface.co/spaces/Soul-AILab/SoulX-Singer" target="_blank" rel="noopener" class="chip">
+          <span class="icon">🌐</span> Online Platform
+        </a>
+        <a href="https://github.com/Soul-AILab/SoulX-Singer-Eval" target="_blank" rel="noopener" class="chip">
+            <span class="icon">🧪</span> SoulX-Singer-Eval
+        </a>
+        <a href="https://huggingface.co/datasets/Soul-AILab/SoulX-Singer-Eval-Dataset" target="_blank" rel="noopener" class="chip">
+            <span class="icon">🗂️</span> SoulX-Singer-Eval-Dataset
+        </a>
      </div>
   </header>
 
@@ -83,7 +95,7 @@
     <a href="#zero-shot-svs">Zero-Shot SVS</a>
     <a href="#lyric-editing">Lyric Editing</a>
     <a href="#style-transfer">Timbre&Style Transfer</a>
-    <a href="#long-context">Long Context</a>
+    <a href="#long-context">In-the-Wild Singing</a>
     <a href="#other-abilities">Other Abilities</a>
     <a href="#showcase">Production Showcase</a>
   </nav>
@@ -293,63 +305,33 @@
           <tbody>
             <tr>
               <td class="col-info">
-                <div class="text-sample">马路戏院商店 天空海阔任你行</div>
+                <div class="text-sample">喜欢你 那双眼动人</div>
                 <div class="audio-group">
                   <span class="audio-label">Ground Truth</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/groundtruth.mp3"></audio>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/喜欢你/groundtruth.mp3"></audio>
                 </div>
                 <div class="audio-group">
                   <span class="audio-label">Prompt</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/prompt.mp3"></audio>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/喜欢你/prompt.mp3"></audio>
                 </div>
               </td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/soulx-singer_melody.mp3"></audio></td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/任我行/soulx-singer_score.mp3"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/喜欢你/soulx-singer_melody.mp3"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/喜欢你/soulx-singer_score.mp3"></audio></td>
             </tr>
             <tr>
               <td class="col-info">
-                <div class="text-sample">仍然紧守于身边 与你进退也共鸣</div>
+                <div class="text-sample">无情人做对孤雏 暂时度过坎坷 苦海中不至独处至少互相依赖过</div>
                 <div class="audio-group">
                   <span class="audio-label">Ground Truth</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/groundtruth.mp3"></audio>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/groundtruth.mp3"></audio>
                 </div>
                 <div class="audio-group">
                   <span class="audio-label">Prompt</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/prompt.mp3"></audio>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/prompt.mp3"></audio>
                 </div>
               </td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/soulx-singer_melody.mp3"></audio></td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/无条件/soulx-singer_score.mp3"></audio></td>
-            </tr>
-            <tr>
-              <td class="col-info">
-                <div class="text-sample">想与你一起 乘搭最早的班机</div>
-                <div class="audio-group">
-                  <span class="audio-label">Ground Truth</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/groundtruth.mp3"></audio>
-                </div>
-                <div class="audio-group">
-                  <span class="audio-label">Prompt</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/prompt.mp3"></audio>
-                </div>
-              </td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/soulx-singer_melody.mp3"></audio></td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/与你常在/soulx-singer_score.mp3"></audio></td>
-            </tr>
-            <tr>
-              <td class="col-info">
-                <div class="text-sample">得不到多么好当得到不知怎算好<br>奢侈的一生天荒地老</div>
-                <div class="audio-group">
-                  <span class="audio-label">Ground Truth</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/groundtruth.mp3"></audio>
-                </div>
-                <div class="audio-group">
-                  <span class="audio-label">Prompt</span>
-                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/prompt.mp3"></audio>
-                </div>
-              </td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/soulx-singer_melody.mp3"></audio></td>
-              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/远在咫尺/soulx-singer_score.mp3"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/soulx-singer_melody.mp3"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/soulx-singer_score.mp3"></audio></td>
             </tr>
           </tbody>
         </table>
@@ -598,26 +580,48 @@
       </div>
     </section>
 
-    <!-- 4. Long Context -->
+    <!-- 4. In-the-Wild -->
     <section id="long-context" class="section">
-      <h2 class="section-title">4. Long Context Generation</h2>
+      <h2 class="section-title">4. In-the-Wild Singing Generation</h2>
       
       <div class="glass-panel">
         <div class="player-container">
-          <div class="player-left" id="vinyl-wrapper">
+          <div class="player-left" id="vinyl-wrapper-legend" style="background: linear-gradient(135deg, #f0f4ff, #e0e7ff);">
             <div class="vinyl-icon"></div>
-            <audio id="long-audio-player" controls style="margin-top:20px; width: 80%;" preload="metadata">
+            <audio id="long-audio-player-legend" controls style="margin-top:20px; width: 80%;" preload="metadata">
                 <source src="static/audios/long_context/传奇/soulx-singer.wav" type="audio/wav">
                 Your browser does not support audio element.
             </audio>
             <div class="audio-group" style="margin-top: 12px; width: 80%;">
               <span class="audio-label">Prompt</span>
-              <audio controls preload="metadata" src="static/audios/long_context/传奇/prompt.wav" style="width: 100%;"></audio>
+              <audio id="long-prompt-player-legend" controls preload="metadata" src="static/audios/long_context/传奇/prompt.wav" style="width: 100%;"></audio>
             </div>
-             <p style="margin-top:10px; font-size: 0.9em; color:#666;">Playing: 传奇 (Long Context)</p>
+             <p style="margin-top:10px; font-size: 0.9em; color:#666;">Playing: 传奇（with accompaniment）</p>
           </div>
           
-          <div class="lyrics-container" id="lyrics-box">
+          <div class="lyrics-container" id="lyrics-box-legend">
+             <!-- Lyrics will be injected by JS -->
+             <div class="lyric-line" data-time="0">Loading lyrics…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel" style="margin-top: 20px;">
+        <div class="player-container">
+          <div class="player-left" id="vinyl-wrapper-changhuan" style="background: linear-gradient(135deg, #f5f3ff, #ede9fe);">
+            <div class="vinyl-icon"></div>
+            <audio id="long-audio-player-changhuan" controls style="margin-top:20px; width: 80%;" preload="metadata">
+                <source src="static/audios/long_context/偿还/偿还.wav" type="audio/wav">
+                Your browser does not support audio element.
+            </audio>
+            <div class="audio-group" style="margin-top: 12px; width: 80%;">
+              <span class="audio-label">Prompt</span>
+              <audio id="long-prompt-player-changhuan" controls preload="metadata" src="static/audios/long_context/偿还/prompt.wav" style="width: 100%;"></audio>
+            </div>
+             <p style="margin-top:10px; font-size: 0.9em; color:#666;">Playing: 偿还（with accompaniment）</p>
+          </div>
+          
+          <div class="lyrics-container" id="lyrics-box-changhuan">
              <!-- Lyrics will be injected by JS -->
              <div class="lyric-line" data-time="0">Loading lyrics…</div>
           </div>
@@ -770,20 +774,7 @@
   </footer>
 
   <script>
-    // Long Context Player Logic
-    const audio = document.getElementById('long-audio-player');
-    const vinyl = document.querySelector('.vinyl-icon');
-    const lyricsBox = document.getElementById('lyrics-box');
-    let lyricLines = [];
-    
-    // Sample Logic for Vinyl Spin
-    audio.addEventListener('play', () => {
-        document.getElementById('vinyl-wrapper').classList.add('playing');
-    });
-    audio.addEventListener('pause', () => {
-        document.getElementById('vinyl-wrapper').classList.remove('playing');
-    });
-
+    // In-the-Wild Player Logic
     const parseSRT = (srtText) => {
       const entries = [];
       const blocks = srtText.replace(/\r/g, '').split('\n\n');
@@ -804,60 +795,87 @@
       return entries;
     };
 
-    const renderLyrics = (entries) => {
-      lyricsBox.innerHTML = '';
-      if (!entries.length) {
-        lyricsBox.innerHTML = '<div class="lyric-line" data-time="0">Lyrics unavailable.</div>';
-        lyricLines = Array.from(lyricsBox.querySelectorAll('.lyric-line'));
-        return;
-      }
-      entries.forEach(entry => {
-        const line = document.createElement('div');
-        line.className = 'lyric-line';
-        line.dataset.time = entry.time;
-        line.textContent = entry.text;
-        lyricsBox.appendChild(line);
-      });
-      lyricLines = Array.from(lyricsBox.querySelectorAll('.lyric-line'));
-      bindLyricClicks();
-    };
+    const initLyricPlayer = ({ audioId, wrapperId, lyricsBoxId, lyricsPath }) => {
+      const audio = document.getElementById(audioId);
+      const wrapper = document.getElementById(wrapperId);
+      const lyricsBox = document.getElementById(lyricsBoxId);
+      if (!audio || !wrapper || !lyricsBox) return;
 
-    const bindLyricClicks = () => {
-      lyricLines.forEach(line => {
-        line.addEventListener('click', () => {
-          const time = parseFloat(line.getAttribute('data-time'));
-          audio.currentTime = time;
-          audio.play();
+      let lyricLines = [];
+
+      audio.addEventListener('play', () => {
+        wrapper.classList.add('playing');
+      });
+
+      audio.addEventListener('pause', () => {
+        wrapper.classList.remove('playing');
+      });
+
+      const bindLyricClicks = () => {
+        lyricLines.forEach(line => {
+          line.addEventListener('click', () => {
+            const time = parseFloat(line.getAttribute('data-time'));
+            audio.currentTime = time;
+            audio.play();
+          });
         });
+      };
+
+      const renderLyrics = (entries) => {
+        lyricsBox.innerHTML = '';
+        if (!entries.length) {
+          lyricsBox.innerHTML = '<div class="lyric-line" data-time="0">Lyrics unavailable.</div>';
+          lyricLines = Array.from(lyricsBox.querySelectorAll('.lyric-line'));
+          return;
+        }
+
+        entries.forEach(entry => {
+          const line = document.createElement('div');
+          line.className = 'lyric-line';
+          line.dataset.time = entry.time;
+          line.textContent = entry.text;
+          lyricsBox.appendChild(line);
+        });
+
+        lyricLines = Array.from(lyricsBox.querySelectorAll('.lyric-line'));
+        bindLyricClicks();
+      };
+
+      fetch(lyricsPath)
+        .then(res => res.text())
+        .then(text => renderLyrics(parseSRT(text)))
+        .catch(() => renderLyrics([]));
+
+      audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+        let activeLine = null;
+        for (const line of lyricLines) {
+          const time = parseFloat(line.getAttribute('data-time'));
+          if (time <= currentTime) activeLine = line;
+        }
+
+        if (activeLine) {
+          lyricLines.forEach(l => l.classList.remove('active'));
+          activeLine.classList.add('active');
+          const offset = activeLine.offsetTop - lyricsBox.offsetTop - (lyricsBox.clientHeight / 2) + (activeLine.clientHeight / 2);
+          lyricsBox.scrollTo({ top: offset, behavior: 'smooth' });
+        }
       });
     };
 
-    fetch('static/texts/long_context/传奇/lyrics.srt')
-      .then(res => res.text())
-      .then(text => renderLyrics(parseSRT(text)))
-      .catch(() => renderLyrics([]));
-
-    // Lyric Sync
-    audio.addEventListener('timeupdate', () => {
-      const currentTime = audio.currentTime;
-      let activeLine = null;
-      for (const line of lyricLines) {
-        const time = parseFloat(line.getAttribute('data-time'));
-        if (time <= currentTime) activeLine = line;
-      }
-      if (activeLine) {
-        lyricLines.forEach(l => l.classList.remove('active'));
-        activeLine.classList.add('active');
-        const offset = activeLine.offsetTop - lyricsBox.offsetTop - (lyricsBox.clientHeight / 2) + (activeLine.clientHeight / 2);
-        lyricsBox.scrollTo({ top: offset, behavior: 'smooth' });
-      }
+    initLyricPlayer({
+      audioId: 'long-audio-player-legend',
+      wrapperId: 'vinyl-wrapper-legend',
+      lyricsBoxId: 'lyrics-box-legend',
+      lyricsPath: 'static/texts/long_context/传奇/lyrics.srt'
     });
 
-    // Click line to jump
-    const bindLyricClicksOnce = () => {
-      if (lyricLines.length) bindLyricClicks();
-    };
-    bindLyricClicksOnce();
+    initLyricPlayer({
+      audioId: 'long-audio-player-changhuan',
+      wrapperId: 'vinyl-wrapper-changhuan',
+      lyricsBoxId: 'lyrics-box-changhuan',
+      lyricsPath: 'static/texts/long_context/偿还/lyrics.srt'
+    });
 
     // Nav active state on scroll
     const navLinks = Array.from(document.querySelectorAll('.nav a'));
