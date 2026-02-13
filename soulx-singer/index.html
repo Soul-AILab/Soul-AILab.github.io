@@ -305,9 +305,9 @@
           <tbody>
             <tr>
               <td class="col-info">
-                <div class="text-sample">喜欢你 那双眼动人</div>
+                <div class="text-sample">喜欢你 那双眼动人 笑声更迷人 愿再可 轻抚你</div>
                 <div class="audio-group">
-                  <span class="audio-label">Ground Truth</span>
+                  <span class="audio-label">Ground Truth (separated vocal)</span>
                   <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/喜欢你/groundtruth.mp3"></audio>
                 </div>
                 <div class="audio-group">
@@ -322,7 +322,7 @@
               <td class="col-info">
                 <div class="text-sample">无情人做对孤雏 暂时度过坎坷 苦海中不至独处至少互相依赖过</div>
                 <div class="audio-group">
-                  <span class="audio-label">Ground Truth</span>
+                  <span class="audio-label">Ground Truth (separated vocal)</span>
                   <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/groundtruth.mp3"></audio>
                 </div>
                 <div class="audio-group">
@@ -332,6 +332,21 @@
               </td>
               <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/soulx-singer_melody.mp3"></audio></td>
               <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/孤雏/soulx-singer_score.mp3"></audio></td>
+            </tr>
+            <tr>
+              <td class="col-info">
+                <div class="text-sample">星不会转谎不会穿 因此太稀罕继续相恋</div>
+                <div class="audio-group">
+                  <span class="audio-label">Ground Truth (separated vocal)</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/偿还/groundtruth.mp3"></audio>
+                </div>
+                <div class="audio-group">
+                  <span class="audio-label">Prompt</span>
+                  <audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/偿还/prompt.mp3"></audio>
+                </div>
+              </td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/偿还/soulx-singer_melody.mp3"></audio></td>
+              <td class="col-model"><audio controls preload="metadata" src="static/audios/singing_synthesis/Cantonese/偿还/soulx-singer_score.mp3"></audio></td>
             </tr>
           </tbody>
         </table>
@@ -606,27 +621,6 @@
         </div>
       </div>
 
-      <div class="glass-panel" style="margin-top: 20px;">
-        <div class="player-container">
-          <div class="player-left" id="vinyl-wrapper-changhuan" style="background: linear-gradient(135deg, #f5f3ff, #ede9fe);">
-            <div class="vinyl-icon"></div>
-            <audio id="long-audio-player-changhuan" controls style="margin-top:20px; width: 80%;" preload="metadata">
-                <source src="static/audios/long_context/偿还/偿还.wav" type="audio/wav">
-                Your browser does not support audio element.
-            </audio>
-            <div class="audio-group" style="margin-top: 12px; width: 80%;">
-              <span class="audio-label">Prompt</span>
-              <audio id="long-prompt-player-changhuan" controls preload="metadata" src="static/audios/long_context/偿还/prompt.wav" style="width: 100%;"></audio>
-            </div>
-             <p style="margin-top:10px; font-size: 0.9em; color:#666;">Playing: 偿还（with accompaniment）</p>
-          </div>
-          
-          <div class="lyrics-container" id="lyrics-box-changhuan">
-             <!-- Lyrics will be injected by JS -->
-             <div class="lyric-line" data-time="0">Loading lyrics…</div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <!-- 5. Other Abilities -->
@@ -868,13 +862,6 @@
       wrapperId: 'vinyl-wrapper-legend',
       lyricsBoxId: 'lyrics-box-legend',
       lyricsPath: 'static/texts/long_context/传奇/lyrics.srt'
-    });
-
-    initLyricPlayer({
-      audioId: 'long-audio-player-changhuan',
-      wrapperId: 'vinyl-wrapper-changhuan',
-      lyricsBoxId: 'lyrics-box-changhuan',
-      lyricsPath: 'static/texts/long_context/偿还/lyrics.srt'
     });
 
     // Nav active state on scroll
