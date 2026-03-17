@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="Open-Sans.css">
+  <link rel="stylesheet" href="index.css">
+  <title></title>
+  <script defer="defer" src="./static/js/main.cb41f6a5.js"></script>
+  <link href="./static/css/main.4017e162.css" rel="stylesheet">
+  <meta name="description"
+        content="LiveAct:Towards Hour-Scale Real-Time Human Animation with Neighbor Forcing and ConvKV Memory">
+  <title>LiveAct:Towards Hour-Scale Real-Time Human Animation with Neighbor Forcing and ConvKV Memory</title>
+</head>
+
+<body>
+  <div id="root" class="column-flex">
+    <div class='responsive-image-container logo-image-container' style='--logo-max-width: 360px;'>
+      <img src='image/logo.png' alt='' />
+    </div>
+    <div id="title-flex" class="column-flex">
+      <h1> Towards Hour-Scale Real-Time Human Animation with Neighbor Forcing and ConvKV Memory </h1>
+    </div>
+
+    <div id="authors-flex" class="column-flex">
+      <p>
+        <a target="_blank" rel="noopener noreferrer" href="https://scholar.google.com/citations?user=jSLx3CcAAAAJ">Dingcheng Zhen*<sup>&#9993;</sup></a>
+        ·
+        <a target="_blank" rel="noopener noreferrer" href="https://scholar.google.com/citations?user=Ii1c51QAAAAJ">Xu Zheng*</a>
+        ·
+        <a target="_blank" rel="noopener noreferrer" href="https://openreview.net/profile?id=~Ruixin_Zhang5">Ruixin Zhang*</a>
+        ·
+        <a target="_blank" rel="noopener noreferrer" href="https://openreview.net/profile?id=~Zhiqi_Jiang3">Zhiqi Jiang*</a>
+      </p>
+      <p>
+        Yichao Yan · Ming Tao · Shunshun Yin
+      </p>
+      <p>
+        <b>Soul AILab</b>
+      </p>
+      <!-- <p>
+        <sup>*</sup>Equal Contribution
+        <sup>&#9993;</sup>Corresponding Authors
+      </p> -->
+      <p align="center">
+        <a target="_blank" rel="noopener noreferrer" href="http://arxiv.org/abs/2603.11746"><img src="https://img.shields.io/badge/Technical-Report-red" alt="Technical Report"></a>
+        <a target="_blank" rel="noopener noreferrer" href="https://demopagedemo.github.io/LiveAct/"><img src="https://img.shields.io/badge/Project-Page-green" alt="Project Page"></a>
+        <a target="_blank" rel="noopener noreferrer" href="https://github.com/Soul-AILab/SoulX-LiveAct"><img src="https://img.shields.io/badge/Github-Home-blue" alt="GitHub Home"></a>
+        <a target="_blank" rel="noopener noreferrer" href="https://huggingface.co/Soul-AILab/LiveAct"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-yellow" alt="Hugging Face Model"></a>
+      </p>
+    </div>
+
+    <div id="abstract-flex" class="column-flex">
+      <h3> Contribution </h3>
+        <p>
+          <b>LiveAct</b> presents a novel framework that enables <b>lifelike, multimodal-controlled, high-fidelity</b> human animation video generation for real-time streaming interactions.
+          <br><b>(I)</b> We identify diffusion-step-aligned neighbor latents as a key inductive bias for AR diffusion, providing a principled and theoretically grounded <b>Neighbor Forcing</b> for step-consistent AR video generation.
+          <br><b>(II)</b> We introduce <b>ConvKV Memory</b>, a lightweight plug-in compression mechanism that enables constant-memory hour-scale video generation with negligible overhead.
+          <br><b>(III)</b> We develop an optimized real-time system that achieves <b>20 FPS</b> using only <b>two</b> H100/H200 GPUs with <b>end-end adaptive FP8 precision, sequence parallelism, and communication-computation parallelism</b> at 720×416 or 512×512 resolution.
+        </p>
+        <!-- <div class='responsive-image-container'>
+          <img src='image/teaser.png' alt='' />
+        </div> -->
+
+        <h4>
+          <b>Generalization for Music Show and Talk Show scene.</b>
+        </h4>
+        
+        <div class="teaser-video-row">
+          <video controls playsInline src="video/teaser1.mp4"></video>
+          <video controls playsInline src="video/teaser2.mp4"></video>
+        </div>
+
+        <h4>
+          <br><b>Generalization for FaceTime scene.</b>
+        </h4>
+
+        <div class="video-slider">
+          <video width="480" height="960" src="video/1.mp4"></video>
+          <video width="480" height="960" src="video/2.mp4"></video>
+          <video width="480" height="960" src="video/singer.mp4"></video>
+        </div>
+
+        <h4>
+          <b>Generalization for Podcast scene.</b>
+        </h4>
+
+        <video controls playsinline width="640" height="960" src="video/podcast.mp4"></video>
+        
+
+        <!-- <p> <b>*</b>Generalization for Music Show, Talk Show and FaceTime scene.</p> -->
+        <!-- <div class="video-slider">
+          <video width="960" height="960" src="video/teaser1.mp4"></video>
+          <video width="960" height="960" src="video/teaser2.mp4"></video>
+        </div> -->
+
+      <h2>Method</h2>
+        <div class='responsive-image-container logo-image-container' style='--logo-max-width: 7200px;'>
+          <img src='image/method.png' alt='' />
+        </div>
+        <p>
+          As shown in Figure, the training pipeline consists of two stages: Neighbor Forcing training and ConvKV Memory&Step Distill training. In addition, our framework incorporates an auxiliary <b>Emotion and Action Editing Module</b> to enable controllable manipulation of facial expressions and gestures. The first stage adopts the <b>Neighbor Forcing</b> AR formulation to train the alignment between audio and text conditions (e.g., emotion and action prompts) with the generated video, ensuring consistency in lip movements, gestures, and emotional expression. The second stage introduces the <b>ConvKV Memory</b> compression mechanism into the rollout of DMD distillation training so that, at inference time, the KV cache remains bounded to a fixed length, enabling stable infinite-length video generation. By integrating the KV cache under the Neighbor Forcing–based autoregressive formulation with the efficient compression mechanism of ConvKV Memory, together with the controllable editing module, SoulX-LiveAct enables real-time hour-scale and even unbounded video generation.
+        </p>
+
+      <h3>More Generalization for FaceTime</h3>
+        <p>
+          LiveAct seamlessly synthesizes realistic humanoid videos with naturally expressive behaviors, supporting infinite durations for live broadcasts and virtual avatar FaceTime scene.
+        </p>
+        <div class="video-slider">
+          <video width="960" height="960" src="video/live1.mp4"></video>
+          <video width="960" height="960" src="video/live4.mp4"></video>
+          <video width="960" height="960" src="video/live3.mp4"></video>
+          <video width="960" height="960" src="video/live2.mp4"></video>
+          <video width="960" height="960" src="video/live5.mp4"></video>
+        </div>
+      
+      <h3>More Generalization with Emotion and Action Editing</h3>
+        <p>
+          Our motion editing module enables controllable modification of head pose and gesture dynamics while preserving identity and lip synchronization.<br/>
+          Emotion and Action Sequence: <b>heart gesture</b> -> <b>covering face</b> -> <b>laughing</b>.
+        </p>
+        <div class="video-slider">
+          <video width="960" height="960" src="video/edit1.mp4"></video>
+          <video width="960" height="960" src="video/edit2.mp4"></video>
+          <video width="960" height="960" src="video/edit3.mp4"></video>
+          <video width="960" height="960" src="video/edit4.mp4"></video>
+        </div> 
+        
+      <h3>More Generalization with Various Character</h3>
+        <p>
+          LiveAct maintains robustness across various characters and scenes, generating character animation videos.
+        </p>
+        <div class="video-slider">
+          <video width="960" height="960" src="video/cartoon1.mp4"></video>
+          <video width="960" height="960" src="video/cartoon2.mp4"></video>、
+        </div> 
+    </div>
+</body>
+
+
+
+</html>

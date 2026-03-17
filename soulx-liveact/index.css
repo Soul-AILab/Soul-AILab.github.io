@@ -1,0 +1,231 @@
+video.banner {
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #363636;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.centered {
+  text-align: center;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+a {
+  color: #3273dc;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+ul {
+  font-size: 16px;
+}
+
+.flex {
+  display: flex;
+}
+
+.column-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flex-gap {
+  gap: 8px;
+}
+
+button {
+  outline: none;
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  text-align: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  user-select: none;
+  touch-action: manipulation;
+  font-size: 16px;
+  line-height: 1.5;
+  height: 40px;
+  color: #fff;
+  background: #363636;
+  border-radius: 40px;
+  padding-inline-start: 20px;
+  padding-inline-end: 20px;
+}
+
+button:hover {
+  background: #000;
+}
+
+h1 {
+  font-size: 40px;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 44px;
+  margin-bottom: 0em;
+}
+
+h3 {
+  font-size: 36px;
+  margin-bottom: 0em;
+  margin-top: 1.5em;
+}
+
+#title-flex {
+  text-align: center;
+  max-width: 1080px;
+  padding: 0 16px;
+  row-gap: 8px;
+}
+
+#abstract-flex {
+  max-width: 1080px;
+  padding: 0 16px;
+  row-gap: 8px;
+}
+
+#sections {
+  width: calc(100vw - 16px);
+  max-width: 1080px;
+}
+
+#sections h3,
+#sections p {
+  width: 100%;
+  padding: 0 16px;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+
+.responsive-image-container {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.responsive-image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Ensure the image is displayed as a block element */
+  max-width: none;
+  /* Reset the max-width property */
+}
+
+.logo-image-container {
+  display: flex;
+  justify-content: center;
+}
+
+.logo-image-container img {
+  width: min(100%, var(--logo-max-width, 360px));
+  max-width: var(--logo-max-width, 360px);
+}
+
+.video-container {
+  overflow: hidden;
+}
+
+.video-container>video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  clip-path: inset(2px);
+  border-radius: 20px;
+}
+
+.teaser-video-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.teaser-video-row > video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+@media (max-width: 900px) {
+  .teaser-video-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Keep slider video width unchanged; place nav arrows outside on both sides. */
+.video-slider {
+  width: 100%;
+  overflow: visible;
+}
+
+.video-slider .slick-slider {
+  position: relative;
+  overflow: visible;
+}
+
+.video-slider .slick-next {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 999px !important;
+  border: 2px solid rgba(255, 255, 255, 0.95) !important;
+  /* background: rgba(18, 18, 18, 0.78) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); */
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  z-index: 4 !important;
+}
+
+.video-slider .slick-prev {
+  left: -56px !important;
+}
+
+.video-slider .slick-next {
+  right: -56px !important;
+}
+
+.video-slider .slick-prev:before,
+.video-slider .slick-next:before {
+  color: #fff !important;
+  font-size: 30px !important;
+  color: #111 !important;
+  font-size: 34px !important;
+  line-height: 1 !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.95), 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+.video-slider .slick-prev:hover,
+.video-slider .slick-next:hover {
+  background: rgba(0, 0, 0, 0.92) !important;
+}
+
+@media (max-width: 768px) {
+  .video-slider .slick-prev {
+    left: -16px !important;
+  }
+
+  .video-slider .slick-next {
+    right: -16px !important;
+  }
+}
