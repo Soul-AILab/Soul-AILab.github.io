@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speaker-Reasoner — Demo</title>
+  <style>
+    :root {
+      --bg: #070c1b;
+      --bg2: #0d1428;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(120,140,200,0.12);
+      --purple: #7c5cfc;
+      --cyan: #00d4ff;
+      --pink: #ff6b9d;
+      --gold: #f5c842;
+      --green: #4ade80;
+      --text: #dce8ff;
+      --muted: #6b7fa8;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Animated background orbs ── */
+    .bg-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.18; }
+    .orb1 { width: 600px; height: 600px; background: #7c5cfc;
+      top: -200px; left: -200px; animation: drift1 22s ease-in-out infinite alternate; }
+    .orb2 { width: 500px; height: 500px; background: #00d4ff;
+      top: 30%; right: -150px; animation: drift2 28s ease-in-out infinite alternate; }
+    .orb3 { width: 400px; height: 400px; background: #ff6b9d;
+      bottom: -100px; left: 30%; animation: drift3 19s ease-in-out infinite alternate; }
+    @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(120px,80px)} }
+    @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-80px,120px)} }
+    @keyframes drift3 { from{transform:translate(0,0)} to{transform:translate(60px,-100px)} }
+
+    /* ── Full-page waveform canvas ── */
+    #bg-wave {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
+    .page { position: relative; z-index: 1; }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px;
+      background: rgba(7,12,27,0.7); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 18px; font-weight: 700; letter-spacing: -0.5px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 120px 40px 80px; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 99px;
+      border: 1px solid rgba(124,92,252,0.4); background: rgba(124,92,252,0.1);
+      font-size: 13px; color: #a78bfa; margin-bottom: 28px;
+      animation: fadeDown 0.8s ease both;
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #a78bfa; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+    .hero-title {
+      font-size: clamp(32px,5vw,58px); font-weight: 800;
+      letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 18px;
+      animation: fadeUp 0.9s ease 0.1s both;
+    }
+    .hero-title .grad {
+      background: linear-gradient(135deg, #c4b5fd 0%, #00d4ff 50%, #4ade80 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: clamp(15px,2vw,19px); color: var(--muted); max-width: 680px;
+      margin: 0 auto 36px; animation: fadeUp 0.9s ease 0.2s both;
+    }
+    .hero-authors {
+      font-size: 14px; color: #8899cc; max-width: 700px; margin: 0 auto 10px;
+      animation: fadeUp 0.9s ease 0.3s both;
+    }
+    .hero-affiliations {
+      font-size: 12px; color: var(--muted); max-width: 680px; margin: 0 auto 36px;
+      animation: fadeUp 0.9s ease 0.35s both;
+    }
+    .hero-links {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+      margin-bottom: 60px; animation: fadeUp 0.9s ease 0.4s both;
+    }
+    .hero-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-link:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .link-arxiv { background: linear-gradient(135deg,#b91c1c,#dc2626); color:#fff; }
+    .link-hf    { background: linear-gradient(135deg,#92400e,#d97706); color:#fff; }
+    .link-gh    { background: linear-gradient(135deg,#1f2937,#374151); color:#fff; }
+    .link-lab   { background: linear-gradient(135deg,#1e3a5f,#2563eb); color:#fff; }
+    .hero-scroll { color: var(--muted); font-size: 13px; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── Section commons ── */
+    section { padding: 100px 40px; max-width: 1280px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block; padding: 4px 14px; border-radius: 99px;
+      background: rgba(124,92,252,0.15); border: 1px solid rgba(124,92,252,0.3);
+      font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #a78bfa;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .section-title { font-size: clamp(26px,3.5vw,40px); font-weight: 800; letter-spacing: -0.8px; margin-bottom: 14px; }
+    .section-desc { font-size: 16px; color: var(--muted); max-width: 680px; margin-bottom: 56px; }
+
+    /* ── Highlights ── */
+    .highlights-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 18px; }
+    .highlight-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 24px;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      opacity: 0; transform: translateY(24px);
+    }
+    .highlight-card.visible { animation: fadeUp 0.6s ease forwards; }
+    .highlight-card:hover {
+      transform: translateY(-4px); border-color: rgba(124,92,252,0.4);
+      box-shadow: 0 8px 32px rgba(124,92,252,0.15);
+    }
+    .hl-icon { font-size: 32px; margin-bottom: 16px; }
+    .hl-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .hl-desc  { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Results section ── */
+    .results-section { padding: 100px 40px; max-width: 1280px; margin: 0 auto; }
+    .table-group { margin-bottom: 56px; }
+    .table-label {
+      font-size: 18px; font-weight: 700; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .table-label::before {
+      content: ''; display: block; width: 4px; height: 22px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--purple), var(--cyan)); flex-shrink: 0;
+    }
+
+    /* ── View toggle (Table ↔ Chart) ── */
+    .view-toggle {
+      display: flex; gap: 3px; margin-left: auto;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 10px; padding: 3px;
+    }
+    .toggle-btn {
+      padding: 5px 15px; border: none; border-radius: 7px; cursor: pointer;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+      background: transparent; color: var(--muted); transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      color: #fff; box-shadow: 0 2px 10px rgba(124,92,252,0.4);
+    }
+    .toggle-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.06); }
+
+    /* ── Table view ── */
+    .table-view { display: block; }
+    .table-view.hidden { display: none; }
+    .table-scroll { overflow-x: auto; border-radius: var(--radius); }
+    .results-table {
+      width: 100%; border-collapse: collapse; font-size: 13.5px;
+      background: var(--card); white-space: nowrap;
+    }
+    .results-table th {
+      padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 700;
+      color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase;
+      border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);
+    }
+    .results-table th.dataset-header {
+      color: var(--text); font-size: 13px; letter-spacing: 0;
+      border-bottom: 1px solid rgba(124,92,252,0.3); background: rgba(124,92,252,0.06);
+    }
+    .results-table th.left-align { text-align: left; padding-left: 20px; }
+    .results-table td {
+      padding: 12px 16px; text-align: center;
+      border-bottom: 1px solid var(--border); transition: background 0.2s;
+    }
+    .results-table td.model-name { text-align: left; padding-left: 20px; font-weight: 600; white-space: nowrap; }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .results-table .ours td { background: rgba(74,222,128,0.04); }
+    .results-table .ours td.model-name { color: var(--green); }
+    .best { font-weight: 800; color: var(--green); }
+    .second { color: var(--gold); }
+
+    /* ── Chart view ── */
+    .chart-view { display: none; }
+    .chart-view.open { display: block; }
+    .metric-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .metric-tab {
+      padding: 5px 18px; border: 1px solid var(--border); border-radius: 99px;
+      background: transparent; color: var(--muted); cursor: pointer;
+      font-size: 12px; font-weight: 700; transition: all 0.2s;
+    }
+    .metric-tab.active { border-color: rgba(124,92,252,0.5); background: rgba(124,92,252,0.15); color: #a78bfa; }
+    .metric-tab:hover:not(.active) { color: var(--text); border-color: rgba(255,255,255,0.15); }
+    .chart-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 28px 20px; overflow-x: auto;
+    }
+    .chart-bars-area { display: flex; align-items: flex-start; gap: 16px; flex-wrap: nowrap; }
+    .ds-group { flex: 1; min-width: 100px; display: flex; flex-direction: column; align-items: center; }
+    .ds-bars { height: 220px; display: flex; align-items: flex-end; gap: 6px; justify-content: center; }
+    .bar-col { flex: 0 0 20px; display: flex; flex-direction: column; align-items: center; }
+    /* all-metric chart layout */
+    .metric-major-group { flex: 1; min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .metric-ds-row { display: flex; gap: 10px; align-items: flex-end; height: 200px; }
+    .metric-ds-subgroup { display: flex; flex-direction: column; align-items: center; }
+    .metric-model-bars { display: flex; gap: 3px; align-items: flex-end; }
+    .ds-mini-label { margin-top: 5px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .ds-label-text { font-size: 9px; color: var(--muted); white-space: nowrap; max-width: 64px; overflow: hidden; text-overflow: ellipsis; }
+    .lang-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 99px; letter-spacing: 0.4px; vertical-align: middle; margin-left: 5px; }
+    .lang-zh  { background: rgba(0,212,255,0.12);  color: var(--cyan);  border: 1px solid rgba(0,212,255,0.3);  }
+    .lang-en  { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+    .lang-mix   { background: rgba(245,200,66,0.12); color: var(--gold);  border: 1px solid rgba(245,200,66,0.3); }
+    .lang-accent { background: rgba(255,107,157,0.12); color: var(--pink); border: 1px solid rgba(255,107,157,0.3); }
+    .cite { font-size: 9px; font-weight: 700; color: #a78bfa; vertical-align: super; margin-left: 1px; cursor: default; }
+    /* ── References ── */
+    .ref-list { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+    .ref-item { display: flex; gap: 16px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 13.5px; line-height: 1.65; color: var(--muted); transition: border-color 0.2s, background 0.2s; }
+    .ref-item:hover { border-color: rgba(124,92,252,0.3); background: rgba(124,92,252,0.04); }
+    .ref-item a { color: #a78bfa; text-decoration: none; }
+    .ref-item a:hover { text-decoration: underline; }
+    .ref-num { flex-shrink: 0; width: 28px; font-weight: 700; font-size: 12px; color: #a78bfa; padding-top: 2px; }
+    .ref-body { flex: 1; }
+    .ref-title { color: var(--text); }
+    .metric-major-label { font-size: 12px; font-weight: 700; color: #a78bfa; padding: 4px 14px; background: rgba(124,92,252,0.1); border-radius: 6px; border: 1px solid rgba(124,92,252,0.2); letter-spacing: 0.4px; }
+    .bar-fill {
+      width: 12px; border-radius: 5px 5px 0 0; min-height: 2px;
+      position: relative; cursor: default;
+      transition: height 0.6s cubic-bezier(0.34,1.3,0.64,1), filter 0.15s;
+    }
+    .bar-fill:hover { filter: brightness(1.3); }
+    .bar-fill::after {
+      content: attr(data-val);
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; font-weight: 700; color: var(--text);
+      opacity: 0; transition: opacity 0.15s; pointer-events: none;
+      background: rgba(7,12,27,0.9); padding: 2px 7px; border-radius: 5px;
+      white-space: nowrap; border: 1px solid var(--border);
+    }
+    .bar-fill:hover::after { opacity: 1; }
+    .ds-label {
+      margin-top: 10px; font-size: 11px; color: var(--muted);
+      text-align: center; line-height: 1.4; max-width: 100%; word-break: break-word;
+    }
+    .chart-legend {
+      display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+      padding-top: 14px; border-top: 1px solid var(--border);
+    }
+    .chart-legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+    .chart-legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+    /* ── Demo section ── */
+    #demos { padding: 100px 40px; max-width: 1280px; margin: 0 auto; }
+    .demo-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; overflow: hidden; margin-bottom: 40px;
+      transition: border-color 0.3s;
+    }
+    .demo-card:hover { border-color: rgba(124,92,252,0.3); }
+    .demo-header {
+      padding: 24px 28px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .demo-num {
+      width: 36px; height: 36px; border-radius: 10px; display: flex;
+      align-items: center; justify-content: center; font-weight: 800; font-size: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan)); flex-shrink: 0;
+    }
+    .demo-title-block { flex: 1; }
+    .demo-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .demo-subtitle-text { font-size: 13px; color: var(--muted); }
+    .demo-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid; }
+    .tag-zh  { background: rgba(0,212,255,0.1);   border-color: rgba(0,212,255,0.3);   color: var(--cyan); }
+    .tag-en  { background: rgba(124,92,252,0.1);  border-color: rgba(124,92,252,0.3);  color: #a78bfa; }
+    .tag-spk { background: rgba(255,107,157,0.1); border-color: rgba(255,107,157,0.3); color: var(--pink); }
+
+    .demo-body { display: grid; grid-template-columns: 55% 45%; min-height: 340px; }
+    @media (max-width: 900px) { .demo-body { grid-template-columns: 1fr; } }
+    .demo-video-wrap {
+      position: relative; background: #000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .demo-video-wrap video { width: 100%; height: 100%; object-fit: contain; display: block; max-height: 380px; }
+    .demo-subtitle-panel { border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+    .panel-header {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      color: var(--muted); text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-header svg { width: 14px; height: 14px; }
+    .panel-scroll {
+      flex: 1; overflow-y: auto; padding: 12px 0; max-height: 360px;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .panel-scroll::-webkit-scrollbar { width: 4px; }
+    .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+    .sub-line {
+      padding: 8px 20px; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .sub-line:hover { background: rgba(255,255,255,0.04); }
+    /* Active: uses speaker color via CSS var injected per-element */
+    .sub-line.active {
+      background: color-mix(in srgb, var(--spk-color, var(--purple)) 11%, transparent);
+      border-left-color: var(--spk-color, var(--purple));
+    }
+    /* Fallback for browsers without color-mix */
+    @supports not (background: color-mix(in srgb, red 10%, transparent)) {
+      .sub-line.active { background: rgba(124,92,252,0.11); }
+    }
+    .sub-meta {
+      font-size: 11px; color: var(--muted); margin-bottom: 3px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .speaker-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sub-text { font-size: 14px; line-height: 1.5; }
+    .panel-legend {
+      padding: 12px 20px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 10px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 60px 40px;
+      border-top: 1px solid var(--border); color: var(--muted); font-size: 13px;
+    }
+    footer a { color: #a78bfa; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; }
+
+    /* ── Reveal on scroll ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-wave" aria-hidden="true"></canvas>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<div class="page">
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-logo">Speaker-Reasoner</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#results">Results</a>
+    <a href="#demos">Demos</a>
+    <a href="#references">References</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    ASLP @ Northwestern Polytechnical University
+  </div>
+  <h1 class="hero-title">Speaker-<span class="grad">Reasoner</span></h1>
+  <p class="hero-subtitle">
+    Scaling Interaction Turns and Reasoning Patterns<br>for Timestamped Speaker-Attributed ASR
+  </p>
+  <p class="hero-authors">
+    Zhennan Lin<sup>1</sup>, Shuai Wang<sup>2</sup>, Zhaokai Sun<sup>1</sup>,
+    Pengyuan Xie<sup>3</sup>, Chuan Xie<sup>3</sup>, Jie Liu<sup>3</sup>,
+    Qiang Zhang<sup>3</sup>, Lei Xie<sup>1†</sup>
+  </p>
+  <p class="hero-affiliations">
+    <sup>1</sup> ASLP@NPU, Northwestern Polytechnical University &nbsp;|&nbsp;
+    <sup>2</sup> Nanjing University &nbsp;|&nbsp;
+    <sup>3</sup> Shanghai Lingguang Zhaxian Technology
+  </p>
+  <div class="hero-links">
+    <a href="https://arxiv.org/abs/2604.03074" target="_blank" class="hero-link link-arxiv">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      arXiv Paper
+    </a>
+    <a href="https://huggingface.co/collections/ASLP-lab/speaker-reasoner" target="_blank" class="hero-link link-hf">🤗 HuggingFace</a>
+    <a href="https://github.com/ASLP-lab/Speaker-Reasoner" target="_blank" class="hero-link link-gh">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      GitHub
+    </a>
+    <a href="http://www.npu-aslp.org/" target="_blank" class="hero-link link-lab">🏫 ASLP Lab</a>
+  </div>
+  <div class="hero-scroll">↓ scroll to explore</div>
+</div>
+
+<!-- ═══════════════════════════════════ ABOUT ════════════════════════════════════ -->
+<section id="about">
+  <div class="reveal">
+    <div class="section-tag">Overview</div>
+    <h2 class="section-title">Agentic Multi-Turn Temporal Reasoning</h2>
+    <p class="section-desc">
+      Speaker-Reasoner is an end-to-end Speech LLM for timestamped speaker-attributed ASR. Instead of single-pass inference, the model iteratively analyzes global audio structure, autonomously predicts temporal boundaries, and performs fine-grained segment analysis — jointly modeling speaker identity, gender, timestamps, and transcription.
+    </p>
+  </div>
+  <div class="highlights-grid">
+    <div class="highlight-card reveal reveal-delay-1">
+      <div class="hl-icon">🔄</div>
+      <div class="hl-title">Agentic Multi-Turn Reasoning</div>
+      <div class="hl-desc">Iterative global-to-local inference: global speaker summary → boundary prediction → fine-grained segment decoding.</div>
+    </div>
+    <div class="highlight-card reveal reveal-delay-2">
+      <div class="hl-icon">🧠</div>
+      <div class="hl-title">Speaker-Aware Context Cache</div>
+      <div class="hl-desc">Extends processing to long-form audio beyond the training context window while preserving speaker consistency across chunks.</div>
+    </div>
+    <div class="highlight-card reveal reveal-delay-3">
+      <div class="hl-icon">📈</div>
+      <div class="hl-title">Three-Stage Progressive Training</div>
+      <div class="hl-desc">Multi-task foundation → temporal interaction learning → cache-conditioned decoding for robust performance.</div>
+    </div>
+    <div class="highlight-card reveal reveal-delay-4">
+      <div class="hl-icon">🏆</div>
+      <div class="hl-title">State-of-the-Art Performance</div>
+      <div class="hl-desc">Outperforms strong baselines including closed-source Gemini-2.5-Pro on AliMeeting and AISHELL-4.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ RESULTS ══════════════════════════════════ -->
+<div class="results-section" id="results">
+  <div class="reveal">
+    <div class="section-tag">Results</div>
+    <h2 class="section-title">Comprehensive Multi-Domain Evaluation</h2>
+    <p class="section-desc">
+      Speaker-Reasoner-4194h demonstrates superior performance across diverse scenarios — video domains, meeting datasets, and cross-lingual benchmarks.
+      All metrics are lower-is-better (↓). Toggle between table and chart views.
+    </p>
+  </div>
+
+  <!-- ── Table Group 1: Video Domains ── -->
+  <div class="table-group reveal">
+    <div class="table-label">
+      Video Domain Evaluation
+      <div class="view-toggle">
+        <button class="toggle-btn active" onclick="setView('video','table',this)">⊞ Table</button>
+        <button class="toggle-btn"        onclick="setView('video','chart',this)">▦ Chart</button>
+      </div>
+    </div>
+
+    <div class="table-view" id="tv-video">
+      <div class="table-scroll">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th class="left-align" rowspan="2">Model</th>
+              <th colspan="4" class="dataset-header">Video-Internal-Eval<span class="lang-badge lang-mix">ZH/EN</span></th>
+              <th colspan="4" class="dataset-header">Video-Internal-Eval-zh<span class="lang-badge lang-zh">ZH</span></th>
+              <th colspan="4" class="dataset-header">Video-Internal-Eval-en<span class="lang-badge lang-en">EN</span></th>
+            </tr>
+            <tr>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="model-name">Gemini-2.5-Pro</td>
+              <td>22.47</td><td>44.13</td><td>74.05</td><td>21.66</td>
+              <td>18.28</td><td>40.97</td><td>69.35</td><td>22.69</td>
+              <td>55.40</td><td>68.82</td><td>100.95</td><td>13.42</td>
+            </tr>
+            <tr>
+              <td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td>
+              <td>16.45</td><td>58.60</td><td>47.18</td><td>42.15</td>
+              <td>17.70</td><td>62.06</td><td>47.65</td><td>44.36</td>
+              <td>7.11</td><td>32.65</td><td>44.62</td><td>25.54</td>
+            </tr>
+            <tr class="ours">
+              <td class="model-name">Speaker-Reasoner (Ours, 4194h)</td>
+              <td class="best">6.27</td><td class="best">24.43</td><td class="best">15.33</td><td class="best">18.16</td>
+              <td class="best">6.50</td><td class="best">25.81</td><td class="best">16.68</td><td class="best">19.31</td>
+              <td class="best">4.42</td><td class="best">16.31</td><td class="best">7.58</td><td class="best">11.89</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="chart-view" id="cv-video">
+      <div class="chart-box" id="chart-video"></div>
+    </div>
+  </div>
+
+  <!-- ── Table Group 2: Meeting Benchmarks ── -->
+  <div class="table-group reveal">
+    <div class="table-label">
+      Meeting Benchmark Evaluation
+      <div class="view-toggle">
+        <button class="toggle-btn active" onclick="setView('meeting','table',this)">⊞ Table</button>
+        <button class="toggle-btn"        onclick="setView('meeting','chart',this)">▦ Chart</button>
+      </div>
+    </div>
+
+    <div class="table-view" id="tv-meeting">
+      <div class="table-scroll">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th class="left-align" rowspan="2">Model</th>
+              <th colspan="4" class="dataset-header">AISHELL4-Eval<sup class="cite">[2]</sup><span class="lang-badge lang-zh">ZH</span></th>
+              <th colspan="4" class="dataset-header">Alimeeting-Far<sup class="cite">[3]</sup><span class="lang-badge lang-zh">ZH</span></th>
+              <th colspan="4" class="dataset-header">AMI-SDM<sup class="cite">[5]</sup><span class="lang-badge lang-en">EN</span></th>
+            </tr>
+            <tr>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="model-name">Gemini-2.5-Pro</td>
+              <td>19.81</td><td>25.11</td><td>36.07</td><td>5.30</td>
+              <td>30.16</td><td>39.29</td><td>56.39</td><td>9.13</td>
+              <td>31.66</td><td>39.98</td><td>50.28</td><td>8.32</td>
+            </tr>
+            <tr>
+              <td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td>
+              <td>22.19</td><td>26.16</td><td>8.94</td><td>3.97</td>
+              <td>34.31</td><td>39.92</td><td>19.62</td><td>5.61</td>
+              <td>30.53</td><td>35.86</td><td>21.00</td><td>5.33</td>
+            </tr>
+            <tr class="ours">
+              <td class="model-name">Speaker-Reasoner (Ours, 4194h)</td>
+              <td class="best">7.13</td><td class="best">8.14</td><td class="best">3.38</td><td class="best">1.01</td>
+              <td class="best">19.72</td><td class="best">19.92</td><td class="best">6.70</td><td class="best">0.20</td>
+              <td class="best">23.29</td><td class="best">25.16</td><td class="best">13.56</td><td class="best">1.87</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="chart-view" id="cv-meeting">
+      <div class="chart-box" id="chart-meeting"></div>
+    </div>
+  </div>
+
+  <!-- ── Table Group 3: Challenge Sets ── -->
+  <div class="table-group reveal">
+    <div class="table-label">
+      MLC-SLM Challenge Evaluation
+      <div class="view-toggle">
+        <button class="toggle-btn active" onclick="setView('challenge','table',this)">⊞ Table</button>
+        <button class="toggle-btn"        onclick="setView('challenge','chart',this)">▦ Chart</button>
+      </div>
+    </div>
+
+    <div class="table-view" id="tv-challenge">
+      <div class="table-scroll">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th class="left-align" rowspan="2">Model</th>
+              <th colspan="4" class="dataset-header">MLC-SLM-Track1<sup class="cite">[4]</sup><span class="lang-badge lang-en">EN</span><span class="lang-badge lang-accent">Multi-Accent</span></th>
+              <th colspan="4" class="dataset-header">MLC-SLM-Track2<sup class="cite">[4]</sup><span class="lang-badge lang-en">EN</span><span class="lang-badge lang-accent">Multi-Accent</span></th>
+            </tr>
+            <tr>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+              <th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="model-name">Gemini-2.5-Pro</td>
+              <td>36.87</td><td>41.88</td><td>42.33</td><td>5.01</td>
+              <td>26.73</td><td>32.19</td><td>46.19</td><td>5.46</td>
+            </tr>
+            <tr>
+              <td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td>
+              <td>10.30</td><td>13.45</td><td>6.27</td><td>3.15</td>
+              <td class="best">7.97</td><td class="best">11.38</td><td class="best">3.14</td><td>3.41</td>
+            </tr>
+            <tr class="ours">
+              <td class="model-name">Speaker-Reasoner (Ours, 4194h)</td>
+              <td class="best">9.17</td><td class="best">11.74</td><td class="best">4.76</td><td class="best">2.57</td>
+              <td>8.54</td><td>11.76</td><td>4.35</td><td class="best">3.22</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="chart-view" id="cv-challenge">
+      <div class="chart-box" id="chart-challenge"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ DEMOS ════════════════════════════════════ -->
+<div id="demos" style="padding:100px 40px;max-width:1280px;margin:0 auto;">
+  <div class="reveal">
+    <div class="section-tag">Demo</div>
+    <h2 class="section-title">Live Transcription Examples</h2>
+    <p class="section-desc">
+      Real-world audio processed by Speaker-Reasoner-4194h, with timestamped speaker-attributed transcription.
+      Press play and watch the transcript scroll in sync. Overlapping speech from multiple speakers highlights simultaneously.
+    </p>
+  </div>
+
+  <!-- Demo 1: 三国演义 -->
+  <div class="demo-card reveal" id="card-0">
+    <div class="demo-header">
+      <div class="demo-num">1</div>
+      <div class="demo-title-block">
+        <div class="demo-title">《三国演义》</div>
+        <div class="demo-subtitle-text">Models rapid turn-taking and frequent backchannels in multi-talker scenarios.</div>
+      </div>
+      <div class="demo-tags">
+        <span class="tag tag-zh">中文 ZH</span>
+        <span class="tag tag-spk">3 Speakers</span>
+      </div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-video-wrap">
+        <video id="video-0" controls preload="metadata">
+          <source src="assets/Demo-三国演义.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="demo-subtitle-panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/></svg>
+          Transcript
+        </div>
+        <div class="panel-scroll" id="scroll-0"></div>
+        <div class="panel-legend" id="legend-0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo 2: 乌海吵架 -->
+  <div class="demo-card reveal" id="card-1">
+    <div class="demo-header">
+      <div class="demo-num">2</div>
+      <div class="demo-title-block">
+        <div class="demo-title">《乌海》</div>
+        <div class="demo-subtitle-text">Resolves overlapping speech and dynamic acoustic variations in argumentative dialogues.</div>
+      </div>
+      <div class="demo-tags">
+        <span class="tag tag-zh">中文 ZH</span>
+        <span class="tag tag-spk">2 Speakers</span>
+      </div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-video-wrap">
+        <video id="video-1" controls preload="metadata">
+          <source src="assets/Demo-乌海吵架.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="demo-subtitle-panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/></svg>
+          Transcript
+        </div>
+        <div class="panel-scroll" id="scroll-1"></div>
+        <div class="panel-legend" id="legend-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo 3: 华强买瓜 -->
+  <div class="demo-card reveal" id="card-2">
+    <div class="demo-header">
+      <div class="demo-num">3</div>
+      <div class="demo-title-block">
+        <div class="demo-title">《征服》</div>
+        <div class="demo-subtitle-text">Transcribes regional accents and informal slang in noisy environments.</div>
+      </div>
+      <div class="demo-tags">
+        <span class="tag tag-zh">中文 ZH</span>
+        <span class="tag tag-spk">2 Speakers</span>
+      </div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-video-wrap">
+        <video id="video-2" controls preload="metadata">
+          <source src="assets/Demo-华强买瓜.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="demo-subtitle-panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/></svg>
+          Transcript
+        </div>
+        <div class="panel-scroll" id="scroll-2"></div>
+        <div class="panel-legend" id="legend-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo 4: 英语短剧 -->
+  <div class="demo-card reveal" id="card-3">
+    <div class="demo-header">
+      <div class="demo-num">4</div>
+      <div class="demo-title-block">
+        <div class="demo-title">《Found A Homeless Billionaire Husband》</div>
+        <div class="demo-subtitle-text">Processes high-dynamic emotional speech under noisy acoustic conditions.</div>
+      </div>
+      <div class="demo-tags">
+        <span class="tag tag-en">英文 EN</span>
+        <span class="tag tag-spk">3 Speakers</span>
+      </div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-video-wrap">
+        <video id="video-3" controls preload="metadata">
+          <source src="assets/Demo-英语短剧.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="demo-subtitle-panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/></svg>
+          Transcript
+        </div>
+        <div class="panel-scroll" id="scroll-3"></div>
+        <div class="panel-legend" id="legend-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ REFERENCES ════════════════════════════════ -->
+<div id="references" style="padding:80px 40px 60px;max-width:1000px;margin:0 auto;">
+  <div class="reveal">
+    <div class="section-tag">Cite</div>
+    <h2 class="section-title">References</h2>
+  </div>
+  <div class="ref-list reveal">
+
+    <div class="ref-item">
+      <span class="ref-num">[1]</span>
+      <div class="ref-body">
+        Z. Peng, J. Yu, Y. Chang et al., &ldquo;<span class="ref-title">VIBEVOICE-ASR Technical Report</span>,&rdquo;
+        <em>CoRR</em>, vol. abs/2601.18184, 2026.
+        <a href="https://arxiv.org/abs/2601.18184" target="_blank">[Link]</a>
+      </div>
+    </div>
+
+    <div class="ref-item">
+      <span class="ref-num">[2]</span>
+      <div class="ref-body">
+        Y. Fu, L. Cheng, S. Lv et al., &ldquo;<span class="ref-title">AISHELL-4: An Open Source Dataset for Speech Enhancement, Separation, Recognition and Speaker Diarization in Conference Scenario</span>,&rdquo;
+        in <em>Proc. Interspeech</em>, pp. 3665&ndash;3669, 2021.
+        <a href="https://www.isca-archive.org/interspeech_2021/fu21b_interspeech.html" target="_blank">[Link]</a>
+      </div>
+    </div>
+
+    <div class="ref-item">
+      <span class="ref-num">[3]</span>
+      <div class="ref-body">
+        Y. Liang, M. Shi, F. Yu et al., &ldquo;<span class="ref-title">The Second Multi-Channel Multi-Party Meeting Transcription Challenge (M2MeT 2.0): A Benchmark for Speaker-Attributed ASR</span>,&rdquo;
+        in <em>Proc. ASRU</em>, pp. 1&ndash;8, IEEE, 2023.
+        <a href="https://ieeexplore.ieee.org/abstract/document/10389625" target="_blank">[Link]</a>
+      </div>
+    </div>
+
+    <div class="ref-item">
+      <span class="ref-num">[4]</span>
+      <div class="ref-body">
+        B. Mu, P. Guo, Z. Sun et al., &ldquo;<span class="ref-title">Summary on The Multilingual Conversational Speech Language Model Challenge: Datasets, Tasks, Baselines, and Methods</span>,&rdquo;
+        in <em>Proc. ICASSP</em>, pp. 19442&ndash;19446, IEEE, 2026.
+        <a href="https://arxiv.org/abs/2509.13785" target="_blank">[Link]</a>
+      </div>
+    </div>
+
+    <div class="ref-item">
+      <span class="ref-num">[5]</span>
+      <div class="ref-body">
+        J. Carletta, S. Ashby, S. Bourban et al., &ldquo;<span class="ref-title">The AMI Meeting Corpus: A Pre-announcement</span>,&rdquo;
+        in <em>Machine Learning for Multimodal Interaction (MLMI)</em>, LNCS, pp. 28&ndash;39, Springer, 2005.
+        <a href="https://doi.org/10.1007/11677482_3" target="_blank">[Link]</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ FOOTER ═══════════════════════════════════ -->
+<footer>
+  <div class="footer-links">
+    <a href="https://arxiv.org/abs/2604.03074" target="_blank">arXiv</a>
+    <a href="https://huggingface.co/collections/ASLP-lab/speaker-reasoner" target="_blank">HuggingFace</a>
+    <a href="https://github.com/ASLP-lab/Speaker-Reasoner" target="_blank">GitHub</a>
+    <a href="http://www.npu-aslp.org/" target="_blank">ASLP Lab</a>
+  </div>
+  <p>Speaker-Reasoner · ASLP@NPU · Apache 2.0 License</p>
+  <p style="margin-top:8px">Contact: znlin@mail.nwpu.edu.cn &nbsp;|&nbsp; lxie@nwpu.edu.cn</p>
+</footer>
+
+</div><!-- end .page -->
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════════
+// CHART DATA
+// ════════════════════════════════════════════════════════════════════════════════
+
+const MODELS = ['Gemini-2.5-Pro', 'VibeVoice-ASR', 'Ours (4194h)'];
+const MODEL_COLORS = {
+  'Gemini-2.5-Pro': '#f5c842',
+  'VibeVoice-ASR':  '#4fc3f7',
+  'Ours (4194h)':   '#4ade80'
+};
+
+const CHART_DATA = {
+  video: {
+    datasets: ['Video-Internal', 'Internal-zh', 'Internal-en'],
+    langs: ['mix', 'zh', 'en'],
+    values: {
+      'Gemini-2.5-Pro': [
+        { WER: 22.47, cpWER: 44.13, DER: 74.05, dcp: 21.66 },
+        { WER: 18.28, cpWER: 40.97, DER: 69.35, dcp: 22.69 },
+        { WER: 55.40, cpWER: 68.82, DER: 100.95, dcp: 13.42 },
+      ],
+      'VibeVoice-ASR': [
+        { WER: 16.45, cpWER: 58.60, DER: 47.18, dcp: 42.15 },
+        { WER: 17.70, cpWER: 62.06, DER: 47.65, dcp: 44.36 },
+        { WER: 7.11,  cpWER: 32.65, DER: 44.62, dcp: 25.54 },
+      ],
+      'Ours (4194h)': [
+        { WER: 6.27,  cpWER: 24.43, DER: 15.33, dcp: 18.16 },
+        { WER: 6.50,  cpWER: 25.81, DER: 16.68, dcp: 19.31 },
+        { WER: 4.42,  cpWER: 16.31, DER: 7.58,  dcp: 11.89 },
+      ],
+    }
+  },
+  meeting: {
+    datasets: ['AISHELL4', 'AliMeeting', 'AMI-SDM'],
+    langs: ['zh', 'zh', 'en'],
+    values: {
+      'Gemini-2.5-Pro': [
+        { WER: 19.81, cpWER: 25.11, DER: 36.07, dcp: 5.30 },
+        { WER: 30.16, cpWER: 39.29, DER: 56.39, dcp: 9.13 },
+        { WER: 31.66, cpWER: 39.98, DER: 50.28, dcp: 8.32 },
+      ],
+      'VibeVoice-ASR': [
+        { WER: 22.19, cpWER: 26.16, DER: 8.94,  dcp: 3.97 },
+        { WER: 34.31, cpWER: 39.92, DER: 19.62, dcp: 5.61 },
+        { WER: 30.53, cpWER: 35.86, DER: 21.00, dcp: 5.33 },
+      ],
+      'Ours (4194h)': [
+        { WER: 7.13,  cpWER: 8.14,  DER: 3.38,  dcp: 1.01 },
+        { WER: 19.72, cpWER: 19.92, DER: 6.70,  dcp: 0.20 },
+        { WER: 23.29, cpWER: 25.16, DER: 13.56, dcp: 1.87 },
+      ],
+    }
+  },
+  challenge: {
+    datasets: ['MLC-SLM-1', 'MLC-SLM-2'],
+    langs: ['en', 'en'],
+    values: {
+      'Gemini-2.5-Pro': [
+        { WER: 36.87, cpWER: 41.88, DER: 42.33, dcp: 5.01 },
+        { WER: 26.73, cpWER: 32.19, DER: 46.19, dcp: 5.46 },
+      ],
+      'VibeVoice-ASR': [
+        { WER: 10.30, cpWER: 13.45, DER: 6.27,  dcp: 3.15 },
+        { WER: 7.97,  cpWER: 11.38, DER: 3.14,  dcp: 3.41 },
+      ],
+      'Ours (4194h)': [
+        { WER: 9.17,  cpWER: 11.74, DER: 4.76,  dcp: 2.57 },
+        { WER: 8.54,  cpWER: 11.76, DER: 4.35,  dcp: 3.22 },
+      ],
+    }
+  }
+};
+
+const METRICS = [
+  { key: 'WER',   label: 'WER'   },
+  { key: 'cpWER', label: 'cpWER' },
+  { key: 'DER',   label: 'DER'   },
+  { key: 'dcp',   label: '∆cp'   },
+];
+
+function renderChart(groupKey) {
+  const group = CHART_DATA[groupKey];
+  const box   = document.getElementById('chart-' + groupKey);
+  const MAX_H = 200;
+
+  // Normalize each metric independently (tallest bar = MAX_H)
+  const metricMax = {};
+  METRICS.forEach(({ key }) => {
+    metricMax[key] = 0.001;
+    MODELS.forEach(m => group.datasets.forEach((_, di) => {
+      metricMax[key] = Math.max(metricMax[key], group.values[m][di][key]);
+    }));
+  });
+
+  const LANG_TEXT = { zh: 'ZH', en: 'EN', mix: 'ZH/EN' };
+  let html = '<div class="chart-bars-area">';
+  METRICS.forEach(({ key, label }) => {
+    html += '<div class="metric-major-group"><div class="metric-ds-row">';
+    group.datasets.forEach((dsLabel, di) => {
+      html += '<div class="metric-ds-subgroup"><div class="metric-model-bars">';
+      MODELS.forEach(m => {
+        const val = group.values[m][di][key];
+        const h   = Math.max(2, Math.round((val / metricMax[key]) * MAX_H));
+        html += `<div class="bar-fill" style="height:0;background:${MODEL_COLORS[m]}" data-val="${val}" data-target="${h}"></div>`;
+      });
+      const lang = group.langs ? group.langs[di] : null;
+      const badge = lang ? `<span class="lang-badge lang-${lang}" style="margin-left:0;font-size:8px;padding:0 4px">${LANG_TEXT[lang]}</span>` : '';
+      html += `</div><div class="ds-mini-label"><span class="ds-label-text">${dsLabel}</span>${badge}</div></div>`;
+    });
+    html += `</div><div class="metric-major-label">${label}</div></div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="chart-legend">';
+  MODELS.forEach(m => {
+    html += `<div class="chart-legend-item"><span class="chart-legend-swatch" style="background:${MODEL_COLORS[m]}"></span><span>${m}</span></div>`;
+  });
+  html += '<span style="margin-left:auto;font-size:11px;color:var(--muted);font-style:italic;">heights normalized per metric</span>';
+  html += '</div>';
+
+  box.innerHTML = html;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    box.querySelectorAll('.bar-fill').forEach(b => { b.style.height = b.dataset.target + 'px'; });
+  }));
+}
+
+function setView(groupKey, view, btn) {
+  const tv = document.getElementById('tv-' + groupKey);
+  const cv = document.getElementById('cv-' + groupKey);
+  btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (view === 'chart') {
+    tv.classList.add('hidden');
+    cv.classList.add('open');
+    renderChart(groupKey);
+  } else {
+    tv.classList.remove('hidden');
+    cv.classList.remove('open');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// TRANSCRIPT DATA
+// ════════════════════════════════════════════════════════════════════════════════
+
+const DEMOS = [
+  {
+    id: 0,
+    speakers: { 'Male 1': '#4fc3f7', 'Male 2': '#81c784', 'Male 3': '#ffb74d' },
+    lines: [
+      { speaker: 'Male 1', start: 0.0,   end: 1.08,  text: '哈哈哈哈哈哈。' },
+      { speaker: 'Male 1', start: 2.04,  end: 9.64,  text: '俺姓张名飞字翼德，平生最爱结交天下豪杰，今日幸会二位壮士，甚觉意气相投。' },
+      { speaker: 'Male 1', start: 10.2,  end: 11.16, text: '呃，请。' },
+      { speaker: 'Male 2', start: 11.6,  end: 12.44, text: '啊哈哈哈。' },
+      { speaker: 'Male 3', start: 12.44, end: 13.52, text: '快请快请快请。' },
+      { speaker: 'Male 2', start: 13.52, end: 14.28, text: '哈哈哈哈。' },
+      { speaker: 'Male 1', start: 15.08, end: 16.16, text: '来人，上酒。' },
+      { speaker: 'Male 2', start: 16.48, end: 18.28, text: '哈哈哈哈。' },
+      { speaker: 'Male 3', start: 19.2,  end: 23.08, text: '某姓关名羽字云长，河东解梁人。' },
+      { speaker: 'Male 1', start: 24.12, end: 24.96, text: '啊，嗯。' },
+      { speaker: 'Male 2', start: 28.51, end: 30.63, text: '在下刘备，刘玄德。' },
+      { speaker: 'Male 1', start: 33.91, end: 34.23, text: '请。' },
+      { speaker: 'Male 1', start: 36.21, end: 39.01, text: '为你我三人萍水相逢，一见如故。' },
+      { speaker: 'Male 1', start: 39.41, end: 40.77, text: '请，请。' },
+      { speaker: 'Male 1', start: 44.21, end: 45.41, text: '坐坐坐坐。' },
+      { speaker: 'Male 3', start: 45.57, end: 46.01, text: '坐坐坐。' },
+      { speaker: 'Male 2', start: 46.73, end: 47.13, text: '哈哈。' },
+      { speaker: 'Male 1', start: 47.73, end: 48.01, text: '嗯。' },
+      { speaker: 'Male 2', start: 49.47, end: 49.99, text: '嗯。' },
+    ]
+  },
+  {
+    id: 1,
+    speakers: { 'Male 1': '#4fc3f7', 'Female 2': '#f48fb1' },
+    lines: [
+      { speaker: 'Male 1',   start: 0.0,   end: 2.64,  text: '你臭不要脸。' },
+      { speaker: 'Female 2', start: 3.72,  end: 4.6,   text: '不过了是吧？' },
+      { speaker: 'Male 1',   start: 5.32,  end: 5.8,   text: '怎么过？' },
+      { speaker: 'Male 1',   start: 6.32,  end: 9.36,  text: '你让我怎么过？我也想跟你好好过，你让我怎么过？' },
+      { speaker: 'Female 2', start: 10.72, end: 17.52, text: '不过了好，我告诉你，我也受够了，就你干的这些破事，我爸妈也快把我逼疯了。' },
+      { speaker: 'Male 1',   start: 18.04, end: 19.16, text: '你爸妈逼你？' },
+      { speaker: 'Female 2', start: 19.68, end: 22.68, text: '我妈说的对，你这就是看上我们家钱了。' },
+      { speaker: 'Male 1',   start: 24.86, end: 29.14, text: '你妈混蛋，我什么时候看上你家钱了？我花你家钱了吗？' },
+      { speaker: 'Female 2', start: 29.26, end: 30.26, text: '你没花我家钱吗？' },
+      { speaker: 'Male 1',   start: 30.3,  end: 31.3,  text: '我花你家什么钱了？' },
+      { speaker: 'Female 2', start: 31.3,  end: 35.82, text: '你现在住的房子不是我爸给的吗？你抽的烟，你喝的酒不是我爸给的吗？' },
+      { speaker: 'Female 2', start: 36.06, end: 36.26, text: '啊？' },
+      { speaker: 'Female 2', start: 36.42, end: 39.66, text: '你平常应酬送的礼不是我爸给的吗？你哪一样不是？' },
+      { speaker: 'Male 1',   start: 39.66, end: 40.58, text: '是我要的吗？' },
+      { speaker: 'Male 1',   start: 41.06, end: 41.98, text: '是我要的吗？' },
+      { speaker: 'Male 1',   start: 42.38, end: 43.98, text: '我什么时候要你妈钱了？' },
+      { speaker: 'Male 1',   start: 45.77, end: 47.05, text: '别跟我扯你妈你妈。' },
+      { speaker: 'Male 1',   start: 48.77, end: 51.77, text: '你们家就势利，就知道钱钱钱。' },
+      { speaker: 'Male 1',   start: 52.33, end: 54.29, text: '我赚钱的时候你花过我钱没有？' },
+      { speaker: 'Female 2', start: 55.41, end: 56.29, text: '你干什么呀？' },
+      { speaker: 'Male 1',   start: 56.45, end: 56.89, text: '别动手！' },
+      { speaker: 'Male 1',   start: 57.41, end: 57.97, text: '别动手！' },
+      { speaker: 'Female 2', start: 58.17, end: 59.33, text: '你打你打你打。' },
+      { speaker: 'Male 1',   start: 59.13, end: 59.73, text: '别动手！' },
+      { speaker: 'Male 1',   start: 60.25, end: 61.53, text: '你以为我不敢打你是吧？' },
+      { speaker: 'Female 2', start: 61.73, end: 62.17, text: '你打。' },
+      { speaker: 'Female 2', start: 64.17, end: 64.77, text: '你打。' },
+      { speaker: 'Male 1',   start: 65.09, end: 65.93, text: '不要逼我啊。' },
+      { speaker: 'Female 2', start: 70.29, end: 71.77, text: '你打我呀！' },
+      { speaker: 'Male 1',   start: 72.41, end: 74.85, text: '我他妈也受够了！' },
+    ]
+  },
+  {
+    id: 2,
+    speakers: { 'Male 1': '#4fc3f7', 'Male 2': '#81c784' },
+    lines: [
+      { speaker: 'Male 1', start: 0.0,   end: 0.16,  text: '行。' },
+      { speaker: 'Male 2', start: 1.08,  end: 2.92,  text: '哥们，你这瓜多少钱一斤呐？' },
+      { speaker: 'Male 1', start: 3.04,  end: 3.8,   text: '两块钱一斤。' },
+      { speaker: 'Male 2', start: 4.44,  end: 8.0,   text: '我操，这瓜皮子是金子做的，还是瓜粒子金子做的？' },
+      { speaker: 'Male 1', start: 9.84,  end: 12.64, text: '你瞧这现在哪有瓜呀，这都是大棚的瓜。' },
+      { speaker: 'Male 1', start: 13.4,  end: 15.04, text: '你嫌贵我还嫌贵呢。' },
+      { speaker: 'Male 2', start: 15.44, end: 16.24, text: '给我挑一个。' },
+      { speaker: 'Male 1', start: 16.48, end: 16.76, text: '行。' },
+      { speaker: 'Male 1', start: 22.42, end: 23.1,  text: '这个怎么样？' },
+      { speaker: 'Male 2', start: 23.3,  end: 23.5,  text: '啊？' },
+      { speaker: 'Male 2', start: 24.02, end: 25.14, text: '这瓜保熟吗？' },
+      { speaker: 'Male 1', start: 26.7,  end: 29.22, text: '我开水果摊的，能卖给你生瓜蛋子？' },
+      { speaker: 'Male 2', start: 31.08, end: 32.76, text: '我问你这瓜保熟吗？' },
+      { speaker: 'Male 1', start: 37.39, end: 38.83, text: '你是故意找茬是不是？' },
+      { speaker: 'Male 1', start: 39.07, end: 39.99, text: '你要不要吧？' },
+      { speaker: 'Male 1', start: 41.67, end: 44.11, text: '你是故意找茬是不是啊？你要不要吧？' },
+      { speaker: 'Male 2', start: 44.79, end: 46.27, text: '你这瓜要熟我肯定要啊。' },
+      { speaker: 'Male 2', start: 48.73, end: 49.93, text: '那它要是不熟怎么办啊？' },
+      { speaker: 'Male 1', start: 50.17, end: 52.85, text: '哎，要是不熟我自己吃了它，满意了吧？' },
+      { speaker: 'Male 1', start: 56.97, end: 57.93, text: '十五斤三十块。' },
+      { speaker: 'Male 2', start: 59.33, end: 61.29, text: '你这哪够十五斤呢？你这秤有问题啊。' },
+      { speaker: 'Male 1', start: 63.29, end: 64.61, text: '你他妈故意找茬是不是？' },
+      { speaker: 'Male 1', start: 64.81, end: 65.69, text: '你要不要吧？' },
+      { speaker: 'Male 1', start: 66.41, end: 67.05, text: '你要不要？' },
+      { speaker: 'Male 2', start: 70.67, end: 75.07, text: '七点十，另外你说的这瓜要是生的，你自己吞进去啊。' },
+      { speaker: 'Male 1', start: 77.41, end: 78.61, text: '你他妈骗我瓜是吧？' },
+      { speaker: 'Male 2', start: 78.77, end: 79.01, text: '我。' },
+    ]
+  },
+  {
+    id: 3,
+    speakers: { 'Male 1': '#4fc3f7', 'Female 2': '#f48fb1', 'Female 3': '#ce93d8' },
+    lines: [
+      { speaker: 'Male 1',   start: 0.0,   end: 2.0,   text: "You're not good enough for me anymore, Victoria" },
+      { speaker: 'Male 1',   start: 3.04,  end: 5.36,  text: "Three years in New York and you're still waiting tables" },
+      { speaker: 'Male 1',   start: 6.16,  end: 9.2,   text: "Always wearing the same old clothes with those same old cowboy boots" },
+      { speaker: 'Male 1',   start: 11.76, end: 13.4,  text: "I'm not on your Texas ranch anymore" },
+      { speaker: 'Female 2', start: 14.96, end: 15.8,  text: "Exactly" },
+      { speaker: 'Female 2', start: 17.08, end: 21.4,  text: "Carl is now the manager at the top US branch of the Jones Group" },
+      { speaker: 'Female 2', start: 22.24, end: 23.8,  text: "He's the VIP after all" },
+      { speaker: 'Female 2', start: 24.48, end: 26.8,  text: "Only someone like me deserves to be with Carl" },
+      { speaker: 'Female 2', start: 29.44, end: 30.68, text: "As for you cousin" },
+      { speaker: 'Female 2', start: 31.76, end: 33.12, text: "You're just pathetic" },
+      { speaker: 'Female 2', start: 33.84, end: 36.32, text: "Why don't you go back to Texas where you belong" },
+      { speaker: 'Female 2', start: 37.04, end: 37.92, text: "Herding cattle" },
+      { speaker: 'Female 3', start: 40.48, end: 42.0,  text: "You are an asshole" },
+      { speaker: 'Female 2', start: 43.68, end: 45.92, text: "Carl, did you see what she did? Go after her" },
+      { speaker: 'Male 1',   start: 46.68, end: 47.15, text: "Bitch" },
+    ]
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════════
+// BUILD SUBTITLE PANELS
+// ════════════════════════════════════════════════════════════════════════════════
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+DEMOS.forEach(demo => {
+  const scrollEl = document.getElementById('scroll-' + demo.id);
+  const legendEl = document.getElementById('legend-' + demo.id);
+
+  demo.lines.forEach((line, i) => {
+    const color = demo.speakers[line.speaker] || '#aaa';
+    const div = document.createElement('div');
+    div.className = 'sub-line';
+    div.dataset.idx = i;
+    // Inject speaker color as CSS custom property for active highlight
+    div.style.setProperty('--spk-color', color);
+    div.innerHTML = `
+      <div class="sub-meta">
+        <span class="speaker-dot" style="background:${color}"></span>
+        <span style="color:${color};font-weight:600">${line.speaker}</span>
+        <span style="opacity:0.5">${fmtTime(line.start)} – ${fmtTime(line.end)}</span>
+      </div>
+      <div class="sub-text">${line.text}</div>`;
+    div.addEventListener('click', () => {
+      const vid = document.getElementById('video-' + demo.id);
+      vid.currentTime = line.start;
+      vid.play();
+    });
+    scrollEl.appendChild(div);
+  });
+
+  // Legend
+  const seen = new Set();
+  demo.lines.forEach(l => {
+    if (seen.has(l.speaker)) return;
+    seen.add(l.speaker);
+    const color = demo.speakers[l.speaker] || '#aaa';
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${color}"></span><span>${l.speaker}</span>`;
+    legendEl.appendChild(item);
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════════════
+// SUBTITLE SYNC — supports simultaneous overlapping segments
+// ════════════════════════════════════════════════════════════════════════════════
+
+DEMOS.forEach(demo => {
+  const vid      = document.getElementById('video-' + demo.id);
+  const scrollEl = document.getElementById('scroll-' + demo.id);
+  let prevActive = new Set(); // track previous frame's active indices
+
+  vid.addEventListener('timeupdate', () => {
+    const t = vid.currentTime;
+
+    // Collect ALL segments whose time window covers the current playhead
+    const activeSet = new Set();
+    for (let i = 0; i < demo.lines.length; i++) {
+      const { start, end } = demo.lines[i];
+      if (t >= start && t < end) activeSet.add(i);
+    }
+
+    // In silence (no active segment), keep showing the last-spoken line for context
+    if (activeSet.size === 0) {
+      for (let i = demo.lines.length - 1; i >= 0; i--) {
+        if (t >= demo.lines[i].start) { activeSet.add(i); break; }
+      }
+    }
+
+    // Skip DOM update if active set hasn't changed
+    if (
+      activeSet.size === prevActive.size &&
+      [...activeSet].every(i => prevActive.has(i))
+    ) return;
+    prevActive = new Set(activeSet);
+
+    // Apply / remove .active on each subtitle row
+    scrollEl.querySelectorAll('.sub-line').forEach((el, i) => {
+      el.classList.toggle('active', activeSet.has(i));
+    });
+
+    // Scroll to the earliest active segment (top of overlapping block)
+    const earliest = Math.min(...activeSet);
+    if (earliest < demo.lines.length) {
+      const el = scrollEl.querySelector(`.sub-line[data-idx="${earliest}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════════════════════════════════════
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ════════════════════════════════════════════════════════════════════════════════
+// FULL-PAGE WAVEFORM BACKGROUND
+// ════════════════════════════════════════════════════════════════════════════════
+
+(function () {
+  const canvas = document.getElementById('bg-wave');
+  const ctx    = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Theme-matched color palette (rgba prefix, alpha appended at draw time)
+  const PALETTE = [
+    'rgba(124,92,252,',   // purple
+    'rgba(0,212,255,',    // cyan
+    'rgba(255,107,157,',  // pink
+    'rgba(74,222,128,',   // green
+    'rgba(245,200,66,',   // gold
+  ];
+
+  // Seed once so layout is deterministic across resizes
+  const rng = (seed => () => { seed = (seed * 16807 + 0) % 2147483647; return (seed - 1) / 2147483646; })(42);
+
+  // 10 wave lines spread across viewport height — each a compound sine wave
+  const WAVES = Array.from({ length: 10 }, (_, i) => ({
+    yPct:  0.04 + i * 0.093,
+    freq:  0.007 + rng() * 0.013,
+    amp:   14   + rng() * 32,
+    freq2: 0.018 + rng() * 0.020,   // second harmonic
+    amp2f: 0.20 + rng() * 0.20,     // second harmonic amplitude factor
+    speed: 0.12 + rng() * 0.32,
+    phase: rng() * Math.PI * 2,
+    color: PALETTE[i % PALETTE.length],
+    alpha: 0.055 + rng() * 0.085,
+    lw:    0.7   + rng() * 1.1,
+  }));
+
+  // 45 slow-drifting particles
+  const PARTICLES = Array.from({ length: 45 }, () => {
+    const c = PALETTE[Math.floor(rng() * PALETTE.length)];
+    const bvx = (rng() - 0.5) * 0.28;
+    const bvy = (rng() - 0.5) * 0.28;
+    return {
+      x: rng() * window.innerWidth,
+      y: rng() * window.innerHeight,
+      r: 0.8 + rng() * 2.2,
+      vx: bvx, vy: bvy, baseVx: bvx, baseVy: bvy,
+      alpha: 0.18 + rng() * 0.35,
+      color: c,
+      pulse: rng() * Math.PI * 2,
+    };
+  });
+  const mouse = { x: -9999, y: -9999, moving: false };
+  let _mt = null;
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX; mouse.y = e.clientY; mouse.moving = true;
+    clearTimeout(_mt);
+    _mt = setTimeout(() => { mouse.moving = false; }, 150);
+  });
+
+  let t = 0;
+
+  function draw() {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // ── Waveforms ──
+    WAVES.forEach(w => {
+      const cy = H * w.yPct;
+      ctx.beginPath();
+      ctx.strokeStyle = w.color + w.alpha + ')';
+      ctx.lineWidth   = w.lw;
+      ctx.lineJoin    = 'round';
+      for (let x = 0; x <= W; x += 4) {
+        const y = cy
+          + Math.sin(x * w.freq  + t * w.speed + w.phase) * w.amp
+          + Math.sin(x * w.freq2 + t * w.speed * 0.55)    * (w.amp * w.amp2f);
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+
+    // ── Particles ──
+    PARTICLES.forEach(p => {
+      const a = p.alpha * (0.7 + 0.3 * Math.sin(t * 0.8 + p.pulse));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + a + ')';
+      ctx.fill();
+      const mdx = mouse.x - p.x, mdy = mouse.y - p.y;
+      const md  = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (md < 160 && md > 0) {
+        const f = (1 - md / 160) * 0.065;
+        const nx = mdx / md, ny = mdy / md;
+        if (mouse.moving) { p.vx -= nx * f; p.vy -= ny * f; }
+        else {
+          const ORBIT_R = 35;
+          if (md > ORBIT_R) { p.vx += nx * f;       p.vy += ny * f;       }
+          else               { p.vx -= nx * f * 1.5; p.vy -= ny * f * 1.5; }
+          p.vx += -ny * f * 0.45;
+          p.vy +=  nx * f * 0.45;
+        }
+      }
+      p.vx = p.vx * 0.92 + p.baseVx * 0.08;
+      p.vy = p.vy * 0.92 + p.baseVy * 0.08;
+      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (spd > 3.5) { p.vx = p.vx / spd * 3.5; p.vy = p.vy / spd * 3.5; }
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10; if (p.y > H + 10) p.y = -10;
+    });
+
+    t += 0.028;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+</script>
+
+</body>
+</html>
