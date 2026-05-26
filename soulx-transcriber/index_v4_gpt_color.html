@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoulX-Transcriber — Demo</title>
+  <style>
+    :root {
+      /* Aurora Ocean — 清透浅底 + 青绿靛紫渐变点缀 */
+      --bg: #f4faff;
+      --bg2: #e8f4fc;
+      --surface: rgba(255,255,255,0.94);
+      --card: rgba(255,255,255,0.9);
+      --border: rgba(14,116,144,0.14);
+      --border-strong: rgba(14,116,144,0.28);
+
+      --primary: #0d9488;
+      --primary-light: #2dd4bf;
+      --secondary: #6366f1;
+      --accent-teal: #14b8a6;
+      --accent-teal-soft: #99f6e4;
+      --accent-blue: #3b82f6;
+      --accent-gold: #f59e0b;
+      --accent-coral: #f472b6;
+
+      --text: #0f172a;
+      --text-soft: #1e3a5f;
+      --muted: #64748b;
+
+      --demo-bg: #f0f9ff;
+      --demo-side: #0c1929;
+      --success: #059669;
+      --radius: 18px;
+      --shadow-sm: 0 8px 24px rgba(15,23,42,0.06);
+      --shadow-md: 0 18px 48px rgba(15,23,42,0.1);
+      --shadow-lg: 0 28px 64px rgba(15,23,42,0.14);
+      --glow-teal: 0 0 40px rgba(45,212,191,0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, 'Segoe UI', 'PingFang SC', sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, #ffffff 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 20%, rgba(167,243,208,0.35) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 0% 80%, rgba(199,210,254,0.3) 0%, transparent 50%),
+        linear-gradient(180deg, #f8fcff 0%, #eef7ff 50%, #e8f4fc 100%);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* 背景层：更淡的青白光晕 + 网格 */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      mix-blend-mode: screen;
+    }
+    .orb1 {
+      width: 640px; height: 640px;
+      background: radial-gradient(circle, rgba(45,212,191,0.45) 0%, transparent 62%);
+      top: -220px; left: -200px;
+      animation: drift1 22s ease-in-out infinite alternate;
+    }
+    .orb2 {
+      width: 540px; height: 540px;
+      background: radial-gradient(circle, rgba(244,114,182,0.28) 0%, transparent 60%);
+      top: 22%; right: -150px;
+      animation: drift2 26s ease-in-out infinite alternate;
+    }
+    .orb3 {
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(129,140,248,0.35) 0%, transparent 65%);
+      bottom: -160px; left: 32%;
+      animation: drift3 24s ease-in-out infinite alternate;
+    }
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(15,23,42,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15,23,42,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 70%);
+      opacity: 0.4;
+    }
+
+    /* 鼠标跟随光晕 */
+    .cursor-glow {
+      position: fixed;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle, rgba(45,212,191,0.12) 0%, rgba(99,102,241,0.06) 40%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: opacity 0.4s ease;
+      opacity: 0;
+    }
+    body:hover .cursor-glow { opacity: 1; }
+
+    @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(120px,70px)} }
+    @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-90px,100px)} }
+    @keyframes drift3 { from{transform:translate(0,0)} to{transform:translate(70px,-90px)} }
+
+    #bg-wave {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.42;
+    }
+    .page { position: relative; z-index: 1; }
+
+    /* Navigation */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px;
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid transparent;
+      transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    nav.nav-scrolled {
+      padding: 10px 40px;
+      background: rgba(255,255,255,0.92);
+      border-bottom-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-logo {
+      font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(120deg, #0d9488, #14b8a6, #6366f1);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradShift 6s ease infinite;
+    }
+    @keyframes gradShift {
+      0%,100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+    }
+    .nav-links { display: flex; gap: 26px; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500;
+      position: relative; padding-bottom: 2px;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -4px;
+      height: 2px; border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transform: scaleX(0); transform-origin: center;
+      transition: transform 0.2s;
+    }
+    .nav-links a:hover {
+      color: #0f172a;
+      transform: translateY(-1px);
+    }
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+      transform: scaleX(1);
+    }
+    .nav-links a.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 120px 40px 80px; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      font-size: 13px; color: var(--primary); margin-bottom: 26px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeDown 0.8s ease both;
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 0 10px rgba(45,212,191,0.8);
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+    .hero-title {
+      font-size: clamp(32px,5vw,56px); font-weight: 900;
+      letter-spacing: -1.4px; line-height: 1.1; margin-bottom: 14px;
+      animation: fadeUp 0.9s ease 0.1s both;
+      color: #021526;
+      text-shadow: 0 14px 40px rgba(148,184,204,0.7);
+    }
+    .hero-title .grad {
+      background: linear-gradient(130deg, #0d9488 0%, #14b8a6 35%, #6366f1 70%, #f472b6 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradShift 5s ease infinite;
+    }
+    .hero-subtitle {
+      font-size: clamp(15px,2vw,18px); color: var(--muted); max-width: 720px;
+      margin: 0 auto 30px; animation: fadeUp 0.9s ease 0.2s both;
+    }
+    .hero-authors {
+      font-size: 13px; color: #1f4b6c; max-width: 760px; margin: 0 auto 8px;
+      animation: fadeUp 0.9s ease 0.3s both;
+    }
+    .hero-affiliations {
+      font-size: 12px; color: var(--muted); max-width: 720px; margin: 0 auto 32px;
+      animation: fadeUp 0.9s ease 0.35s both;
+    }
+    .hero-links {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+      margin-bottom: 46px; animation: fadeUp 0.9s ease 0.4s both;
+    }
+    .hero-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 20px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+      box-shadow: 0 10px 26px rgba(15,23,42,0.12);
+    }
+    .hero-link svg { opacity: 0.9; }
+    .hero-link:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 16px 40px rgba(15,23,42,0.25);
+      filter: brightness(1.05);
+    }
+    .link-arxiv { background: linear-gradient(135deg,#14532d,#16a34a); color:#ecfdf5; }
+    .link-hf    { background: linear-gradient(135deg,#0f766e,#22c1b4); color:#f0fdfa; }
+    .link-gh    { background: linear-gradient(135deg,#020617,#111827); color:#e5e7eb; }
+    .link-lab   { background: linear-gradient(135deg,#1d4ed8,#60a5fa); color:#eff6ff; }
+
+    .hero-scroll {
+      color: var(--muted); font-size: 13px; margin-top: 4px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Section commons */
+    section { padding: 90px 40px; max-width: 1280px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block; padding: 4px 14px; border-radius: 999px;
+      background: linear-gradient(135deg, rgba(45,212,191,0.12), rgba(99,102,241,0.1));
+      border: 1px solid var(--border-strong);
+      font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--primary);
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(24px,3.3vw,36px);
+      font-weight: 800; letter-spacing: -0.7px; margin-bottom: 12px;
+      text-shadow: 0 10px 26px rgba(148,184,204,0.5);
+    }
+    .section-desc {
+      font-size: 15px; color: var(--muted); max-width: 680px; margin-bottom: 44px;
+    }
+
+    /* Highlights */
+    .highlights-grid {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+      gap: 18px;
+    }
+    .highlight-card {
+      background: linear-gradient(135deg,rgba(240,253,250,0.96),rgba(230,244,255,0.96));
+      border: 1px solid rgba(190,218,242,0.85);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.12);
+      border-radius: var(--radius); padding: 24px 22px;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      opacity: 0; transform: translateY(24px);
+      color: var(--text);
+    }
+    .highlight-card.visible { animation: fadeUp 0.6s ease forwards; }
+    .highlight-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(36,179,163,0.9);
+      box-shadow: 0 22px 46px rgba(15,23,42,0.22);
+      background: linear-gradient(135deg,rgba(236,253,245,0.99),rgba(219,244,252,0.99));
+    }
+    .hl-icon { font-size: 30px; margin-bottom: 12px; }
+    .hl-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: #064e3b; }
+    .hl-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      max-width: 720px;
+      margin: 0 auto;
+      padding-left: 8px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 27px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--primary-light), var(--secondary), var(--accent-coral));
+      border-radius: 2px;
+      opacity: 0.45;
+      transform-origin: top;
+      transform: scaleY(0);
+      transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .timeline.visible::before { transform: scaleY(1); }
+    .timeline-item {
+      display: flex; gap: 20px; align-items: flex-start;
+      margin-bottom: 28px; position: relative;
+    }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-icon {
+      width: 54px; height: 54px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative; z-index: 1;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .timeline-item:hover .timeline-icon {
+      transform: scale(1.06) rotate(-3deg);
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md), var(--glow-teal);
+    }
+    .timeline-content {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .timeline-item:hover .timeline-content {
+      transform: translateX(4px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+    }
+    .timeline-title {
+      font-size: 16px; font-weight: 700; color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+    .timeline-desc {
+      font-size: 13px; color: var(--muted); line-height: 1.65;
+    }
+
+    /* Results section */
+    .results-section { padding: 90px 40px; max-width: 1280px; margin: 0 auto; }
+    .table-group { margin-bottom: 48px; }
+    .table-label {
+      font-size: 17px; font-weight: 700; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      color: var(--text-soft);
+    }
+    .table-label::before {
+      content: ''; display: block; width: 4px; height: 22px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      flex-shrink: 0;
+    }
+    .view-toggle {
+      display: flex; gap: 3px; margin-left: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 3px;
+      box-shadow: var(--shadow-sm);
+    }
+    .toggle-btn {
+      padding: 5px 14px; border: none; border-radius: 7px; cursor: pointer;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+      background: transparent; color: var(--muted); transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; box-shadow: 0 4px 14px rgba(13,148,136,0.35);
+    }
+    .toggle-btn:hover:not(.active) {
+      color: var(--text); background: rgba(14,116,144,0.08);
+    }
+    .table-view { display: block; }
+    .table-view.hidden { display: none; }
+    .table-scroll { overflow-x: auto; border-radius: var(--radius); }
+    .results-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+      background: var(--surface); white-space: nowrap;
+      box-shadow: var(--shadow-md);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .results-table th {
+      padding: 11px 14px; text-align: center; font-size: 11px; font-weight: 700;
+      color: var(--muted); letter-spacing: 0.4px; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    .results-table th.dataset-header {
+      color: var(--text-soft); font-size: 12px; letter-spacing: 0;
+      text-transform: none;
+      border-bottom: 1px solid var(--border-strong);
+      background: linear-gradient(180deg, rgba(45,212,191,0.12), rgba(255,255,255,0.98));
+    }
+    .results-table th.left-align { text-align: left; padding-left: 18px; }
+    .results-table td {
+      padding: 11px 14px; text-align: center;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .results-table td.model-name {
+      text-align: left; padding-left: 18px; font-weight: 600; white-space: nowrap;
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:hover td {
+      background: rgba(45,212,191,0.06);
+    }
+    .results-table .ours td {
+      background: linear-gradient(90deg, rgba(45,212,191,0.1), transparent);
+    }
+    .results-table .ours td.model-name { color: var(--success); font-weight: 700; }
+    .best { font-weight: 800; color: var(--success); }
+    .second { color: var(--accent-gold); }
+    .chart-view { display: none; }
+    .chart-view.open { display: block; }
+    .chart-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 24px 18px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-md);
+    }
+    .chart-bars-area {
+      display: flex; align-items: flex-start; gap: 14px; flex-wrap: nowrap;
+    }
+    .metric-major-group {
+      flex: 1; min-width: 56px; display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+    }
+    .metric-ds-row { display: flex; gap: 8px; align-items: flex-end; height: 200px; }
+    .metric-ds-subgroup { display: flex; flex-direction: column; align-items: center; }
+    .metric-model-bars { display: flex; gap: 3px; align-items: flex-end; }
+    .ds-mini-label {
+      margin-top: 4px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .ds-label-text {
+      font-size: 9px; color: var(--muted); white-space: nowrap;
+      max-width: 60px; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lang-badge {
+      display: inline-block; font-size: 9px; font-weight: 700;
+      padding: 1px 6px; border-radius: 99px;
+      letter-spacing: 0.3px; vertical-align: middle; margin-left: 4px;
+    }
+    .lang-zh  { background: rgba(45,212,191,0.15); color: #0d9488; border: 1px solid rgba(20,184,166,0.45); }
+    .lang-en  { background: rgba(99,102,241,0.12); color: #4f46e5; border: 1px solid rgba(99,102,241,0.4); }
+    .lang-mix { background: rgba(59,130,246,0.1); color: #2563eb; border: 1px solid rgba(59,130,246,0.4); }
+    .lang-accent { background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.45); }
+    .cite { font-size: 9px; font-weight: 700; color: var(--secondary); vertical-align: super; margin-left: 1px; }
+    .metric-major-label {
+      font-size: 11px; font-weight: 700; color: var(--text-soft);
+      padding: 4px 12px;
+      background: rgba(99,102,241,0.08);
+      border-radius: 6px;
+      border: 1px solid rgba(99,102,241,0.2);
+    }
+    .bar-fill {
+      width: 11px; border-radius: 5px 5px 0 0; min-height: 2px;
+      position: relative; cursor: default;
+      transition: height 0.65s cubic-bezier(0.34,1.3,0.64,1), filter 0.15s;
+    }
+    .bar-fill:hover { filter: brightness(1.12); }
+    .bar-fill::after {
+      content: attr(data-val);
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; font-weight: 700; color: var(--text);
+      opacity: 0; transition: opacity 0.15s; pointer-events: none;
+      background: var(--surface); padding: 2px 6px; border-radius: 5px;
+      white-space: nowrap; border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .bar-fill:hover::after { opacity: 1; }
+    .chart-legend {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;
+      padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .chart-legend-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--muted);
+    }
+    .chart-legend-swatch {
+      width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0;
+    }
+
+    /* References */
+    .ref-list { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+    .ref-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 16px;
+      font-size: 13px; line-height: 1.65; color: var(--muted);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+    .ref-item:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+    .ref-item a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .ref-item a:hover { text-decoration: underline; }
+    .ref-num {
+      flex-shrink: 0; width: 26px; font-weight: 700; font-size: 12px;
+      color: var(--secondary); padding-top: 1px;
+    }
+    .ref-body { flex: 1; }
+    .ref-title { color: var(--text); font-weight: 500; }
+
+    #references { padding: 70px 40px 50px; max-width: 1000px; margin: 0 auto; }
+
+    /* Demo section */
+    #demos { padding: 90px 40px; max-width: 1280px; margin: 0 auto; }
+    .demo-card {
+      background: var(--demo-bg);
+      border: 1px solid rgba(190,218,242,0.88);
+      border-radius: 20px; overflow: hidden; margin-bottom: 32px;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      box-shadow: 0 18px 38px rgba(15,23,42,0.16);
+      color: var(--text);
+    }
+    .demo-card:hover {
+      border-color: rgba(36,179,163,0.9);
+      box-shadow: 0 24px 52px rgba(15,23,42,0.24);
+      transform: translateY(-3px);
+    }
+    .demo-header {
+      padding: 20px 24px 16px; border-bottom: 1px solid rgba(190,218,242,0.9);
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      background: linear-gradient(90deg,rgba(236,253,245,0.98),rgba(219,244,252,0.98));
+    }
+    .demo-num {
+      width: 34px; height: 34px; border-radius: 12px; display: flex;
+      align-items: center; justify-content: center; font-weight: 800; font-size: 15px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary)); flex-shrink: 0;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(13,148,136,0.35);
+    }
+    .demo-title-block { flex: 1; }
+    .demo-title { font-size: 18px; font-weight: 800; margin-bottom: 3px; color: #022c22; }
+    .demo-subtitle-text { font-size: 12px; color: var(--muted); }
+    .demo-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag {
+      padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      border: 1px solid;
+    }
+    .tag-zh  { background: rgba(209,250,229,0.9); border-color: rgba(16,185,129,0.85); color: #047857; }
+    .tag-en  { background: rgba(219,244,252,0.95); border-color: rgba(37,99,235,0.6); color: #1d4ed8; }
+    .tag-spk { background: rgba(226,239,241,0.9); border-color: rgba(148,163,184,0.8); color: #334155; }
+    .tag-overlap { background: rgba(254,249,195,0.95); border-color: rgba(234,179,8,0.9); color: #854d0e; }
+
+    .demo-body { display: grid; grid-template-columns: 55% 45%; min-height: 320px; }
+    @media (max-width: 900px) { .demo-body { grid-template-columns: 1fr; } }
+
+    .demo-video-wrap {
+      position: relative; background: var(--demo-side);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
+    }
+
+    .audio-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #020617;
+    }
+    .audio-wrap audio {
+      width: 100%;
+      display: block;
+    }
+    .audio-waveform {
+      width: 100%;
+      height: 110px;
+      background: radial-gradient(circle at top, #020617 0%, #020617 60%, #020617 100%);
+    }
+
+    .demo-subtitle-panel {
+      border-left: 1px solid rgba(190,218,242,0.85);
+      display: flex; flex-direction: column;
+      background: linear-gradient(180deg,#f1f8ff,#e3f2fb);
+    }
+    .panel-header {
+      padding: 12px 18px; border-bottom: 1px solid rgba(190,218,242,0.9);
+      font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      color: var(--muted); text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(236,246,255,0.98);
+    }
+    .panel-header svg { width: 14px; height: 14px; }
+    .panel-scroll {
+      flex: 1; overflow-y: auto; padding: 10px 0; max-height: 360px;
+      scrollbar-width: thin; scrollbar-color: rgba(148,163,184,0.4) transparent;
+    }
+    .panel-scroll::-webkit-scrollbar { width: 4px; }
+    .panel-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148,163,184,0.6); border-radius: 2px;
+    }
+
+    .sub-line {
+      padding: 7px 18px; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.18s, border-color 0.18s;
+      font-size: 13px;
+    }
+    .sub-line:hover { background: rgba(226,239,251,0.95); }
+    .sub-line.active {
+      background: color-mix(in srgb, var(--spk-color, #0f766e) 14%, #f1f5f9);
+      border-left-color: var(--spk-color, #0f766e);
+    }
+    @supports not (background: color-mix(in srgb, red 10%, transparent)) {
+      .sub-line.active { background: rgba(186,230,253,0.7); }
+    }
+    .sub-line.overlap-line { border-right: 3px solid var(--accent-gold); }
+    .sub-meta {
+      font-size: 11px; color: var(--muted); margin-bottom: 2px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .speaker-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      box-shadow: 0 0 7px rgba(36,179,163,0.9);
+    }
+    .overlap-indicator {
+      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
+      background: rgba(254,249,195,0.96);
+      border: 1px solid rgba(234,179,8,0.9);
+      color: #854d0e;
+    }
+    .sub-text { font-size: 13px; line-height: 1.55; color: #082f33; }
+    .panel-legend {
+      padding: 9px 18px; border-top: 1px solid rgba(190,218,242,0.9);
+      display: flex; flex-wrap: wrap; gap: 8px;
+      background: rgba(236,246,255,0.98);
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      box-shadow: 0 0 7px rgba(36,179,163,0.9);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center; padding: 48px 40px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(232,244,252,0.95));
+      margin-top: 40px;
+    }
+    footer a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    footer a:hover { color: var(--secondary); text-decoration: underline; }
+    .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+
+    /* Reveal */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    @media (max-width: 640px) {
+      nav { padding: 10px 20px; }
+      nav.nav-scrolled { padding: 8px 20px; }
+      .nav-links { gap: 14px; }
+      section, #demos, .results-section, #references { padding-left: 20px; padding-right: 20px; }
+      .timeline { padding-left: 0; }
+      .timeline::before { left: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+<canvas id="bg-wave" aria-hidden="true"></canvas>
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<div class="page">
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-logo">SoulX-Transcriber</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#results">Results</a>
+    <a href="#demos">Demos</a>
+    <a href="#references">References</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> Soul AILab</div>
+  <h1 class="hero-title">SoulX-<span class="grad">Transcriber</span></h1>
+  <p class="hero-subtitle">End-to-End Multi-Speaker Diarization and Recognition in Social Dialogue Scenarios for Timestamped Speaker-Attributed ASR</p>
+  <p class="hero-authors">
+    Yuhang Dai<sup>1,2</sup><sup>*</sup>, Haopeng Lin<sup>1</sup><sup>*</sup>, Zhennan Lin<sup>2</sup>, Jiale Qian<sup>1</sup>, Hao Meng<sup>1</sup>, Hanke Xie<sup>1,4</sup>, Wenxiao Cao<sup>1</sup>, Jun Wu<sup>1</sup>, Hongmei Liu<sup>1</sup>, Hanlin Wen<sup>1</sup>, Shunshun Yin<sup>1</sup>, Ming Tao<sup>1</sup>, Lei Xie<sup>2</sup>, Xinsheng Wang<sup>1†</sup>
+  </p>
+  <p class="hero-affiliations">
+    <sup>1</sup> Soul AI Lab, China &nbsp;|&nbsp;
+    <sup>2</sup> ASLP@NPU, Northwestern Polytechnical University &nbsp;|&nbsp;
+    <sup>3</sup> NanJing University, China
+  </p>
+  <div class="hero-links">
+    <a href="https://arxiv.org/abs/2603.25377" target="_blank" class="hero-link link-arxiv">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      arXiv Paper
+    </a>
+    <a href="https://huggingface.co/Soul-AILab" target="_blank" rel="noopener" class="hero-link link-hf">🤗 HuggingFace</a>
+    <a href="https://github.com/Soul-AILab/SoulX-Transcriber" target="_blank" class="hero-link link-gh">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      GitHub
+    </a>
+    <a href="http://www.npu-aslp.org/" target="_blank" class="hero-link link-lab">🏫 Soul AILab</a>
+  </div>
+  <div class="hero-scroll">↓ scroll to explore</div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <div class="section-tag">Overview</div>
+    <h2 class="section-title">SoulX-Transcriber: End-to-End Multi-Speaker Diarization and Recognition Model.</h2>
+    <p class="section-desc">SoulX-Transcriber is an end-to-end Speech LLM for timestamped speaker-attributed ASR. The model iteratively analyzes global audio structure, predicts temporal boundaries, and performs fine-grained segment analysis.</p>
+  </div>
+
+  <div class="timeline reveal">
+    <div class="timeline-item reveal reveal-delay-1">
+      <div class="timeline-icon">🔄</div>
+      <div class="timeline-content">
+        <h3 class="timeline-title">Agentic Multi-Turn Reasoning</h3>
+        <p class="timeline-desc">Iterative global-to-local inference: global speaker summary → boundary prediction → fine-grained segment decoding.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-2">
+      <div class="timeline-icon">🧠</div>
+      <div class="timeline-content">
+        <h3 class="timeline-title">Speaker-Aware Context Cache</h3>
+        <p class="timeline-desc">Extends processing to long-form audio beyond the training context window while preserving speaker consistency.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-3">
+      <div class="timeline-icon">📈</div>
+      <div class="timeline-content">
+        <h3 class="timeline-title">Three-Stage Progressive Training</h3>
+        <p class="timeline-desc">Multi-task foundation → temporal interaction learning → cache-conditioned decoding for robust performance.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-4">
+      <div class="timeline-icon">🏆</div>
+      <div class="timeline-content">
+        <h3 class="timeline-title">State-of-the-Art Performance</h3>
+        <p class="timeline-desc">Outperforms strong baselines including closed-source Gemini-2.5-Pro on AliMeeting and AISHELL-4.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<div class="results-section" id="results">
+  <div class="reveal">
+    <div class="section-tag">Results</div>
+    <h2 class="section-title">Comprehensive Multi-Domain Evaluation</h2>
+    <p class="section-desc">All metrics are lower-is-better (↓). Toggle between table and chart views.</p>
+  </div>
+
+  <div class="table-group reveal">
+    <div class="table-label">Video Domain Evaluation
+      <div class="view-toggle">
+        <button class="toggle-btn active" onclick="setView('video','table',this)">⊞ Table</button>
+        <button class="toggle-btn" onclick="setView('video','chart',this)">▦ Chart</button>
+      </div>
+    </div>
+    <div class="table-view" id="tv-video"><div class="table-scroll">
+      <table class="results-table"><thead>
+        <tr><th class="left-align" rowspan="2">Model</th>
+          <th colspan="4" class="dataset-header">Video-Internal-Eval<span class="lang-badge lang-mix">ZH/EN</span></th>
+          <th colspan="4" class="dataset-header">Video-Internal-Eval-zh<span class="lang-badge lang-zh">ZH</span></th>
+          <th colspan="4" class="dataset-header">Video-Internal-Eval-en<span class="lang-badge lang-en">EN</span></th></tr>
+        <tr><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th></tr>
+      </thead><tbody>
+        <tr><td class="model-name">Gemini-2.5-Pro</td><td>22.47</td><td>44.13</td><td>74.05</td><td>21.66</td><td>18.28</td><td>40.97</td><td>69.35</td><td>22.69</td><td>55.40</td><td>68.82</td><td>100.95</td><td>13.42</td></tr>
+        <tr><td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td><td>16.45</td><td>58.60</td><td>47.18</td><td>42.15</td><td>17.70</td><td>62.06</td><td>47.65</td><td>44.36</td><td>7.11</td><td>32.65</td><td>44.62</td><td>25.54</td></tr>
+        <tr class="ours"><td class="model-name">SoulX-Transcriber (Ours)</td><td class="best">6.27</td><td class="best">24.43</td><td class="best">15.33</td><td class="best">18.16</td><td class="best">6.50</td><td class="best">25.81</td><td class="best">16.68</td><td class="best">19.31</td><td class="best">4.42</td><td class="best">16.31</td><td class="best">7.58</td><td class="best">11.89</td></tr>
+      </tbody></table>
+    </div></div>
+    <div class="chart-view" id="cv-video"><div class="chart-box" id="chart-video"></div></div>
+  </div>
+
+  <div class="table-group reveal">
+    <div class="table-label">Meeting Benchmark Evaluation
+      <div class="view-toggle">
+        <button class="toggle-btn active" onclick="setView('meeting','table',this)">⊞ Table</button>
+        <button class="toggle-btn" onclick="setView('meeting','chart',this)">▦ Chart</button>
+      </div>
+    </div>
+    <div class="table-view" id="tv-meeting"><div class="table-scroll">
+      <table class="results-table"><thead>
+        <tr><th class="left-align" rowspan="2">Model</th>
+          <th colspan="4" class="dataset-header">AISHELL4-Eval<sup class="cite">[2]</sup><span class="lang-badge lang-zh">ZH</span></th>
+          <th colspan="4" class="dataset-header">Alimeeting-Far<sup class="cite">[3]</sup><span class="lang-badge lang-zh">ZH</span></th>
+          <th colspan="4" class="dataset-header">AMI-SDM<sup class="cite">[5]</sup><span class="lang-badge lang-en">EN</span></th></tr>
+        <tr><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th></tr>
+      </thead><tbody>
+        <tr><td class="model-name">Gemini-2.5-Pro</td><td>19.81</td><td>25.11</td><td>36.07</td><td>5.30</td><td>30.16</td><td>39.29</td><td>56.39</td><td>9.13</td><td>31.66</td><td>39.98</td><td>50.28</td><td>8.32</td></tr>
+        <tr><td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td><td>22.19</td><td>26.16</td><td>8.94</td><td>3.97</td><td>34.31</td><td>39.92</td><td>19.62</td><td>5.61</td><td>30.53</td><td>35.86</td><td>21.00</td><td>5.33</td></tr>
+        <tr class="ours"><td class="model-name">SoulX-Transcriber (Ours)</td><td class="best">7.13</td><td class="best">8.14</td><td class="best">3.38</td><td class="best">1.01</td><td class="best">19.72</td><td class="best">19.92</td><td class="best">6.70</td><td class="best">0.20</td><td class="best">23.29</td><td class="best">25.16</td><td class="best">13.56</td><td class="best">1.87</td></tr>
+      </tbody></table>
+    </div></div>
+    <div class="chart-view" id="cv-meeting"><div class="chart-box" id="chart-meeting"></div></div>
+  </div>
+
+  <div class="table-group reveal">
+    <div class="table-label">MLC-SLM Challenge Evaluation
+      <div class="view-toggle">
+        <button class="toggle-btn active" onclick="setView('challenge','table',this)">⊞ Table</button>
+        <button class="toggle-btn" onclick="setView('challenge','chart',this)">▦ Chart</button>
+      </div>
+    </div>
+    <div class="table-view" id="tv-challenge"><div class="table-scroll">
+      <table class="results-table"><thead>
+        <tr><th class="left-align" rowspan="2">Model</th>
+          <th colspan="4" class="dataset-header">MLC-SLM-Track1<sup class="cite">[4]</sup><span class="lang-badge lang-en">EN</span><span class="lang-badge lang-accent">Multi-Accent</span></th>
+          <th colspan="4" class="dataset-header">MLC-SLM-Track2<sup class="cite">[4]</sup><span class="lang-badge lang-en">EN</span><span class="lang-badge lang-accent">Multi-Accent</span></th></tr>
+        <tr><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th><th>WER↓</th><th>cpWER↓</th><th>DER↓</th><th>∆cp↓</th></tr>
+      </thead><tbody>
+        <tr><td class="model-name">Gemini-2.5-Pro</td><td>36.87</td><td>41.88</td><td>42.33</td><td>5.01</td><td>26.73</td><td>32.19</td><td>46.19</td><td>5.46</td></tr>
+        <tr><td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td><td>10.30</td><td>13.45</td><td>6.27</td><td>3.15</td><td class="best">7.97</td><td class="best">11.38</td><td class="best">3.14</td><td>3.41</td></tr>
+        <tr class="ours"><td class="model-name">SoulX-Transcriber (Ours)</td><td class="best">9.17</td><td class="best">11.74</td><td class="best">4.76</td><td class="best">2.57</td><td>8.54</td><td>11.76</td><td>4.35</td><td class="best">3.22</td></tr>
+      </tbody></table>
+    </div></div>
+    <div class="chart-view" id="cv-challenge"><div class="chart-box" id="chart-challenge"></div></div>
+  </div>
+</div>
+
+<!-- DEMOS -->
+<div id="demos">
+  <div class="reveal">
+    <div class="section-tag">Demo</div>
+    <h2 class="section-title">Live Transcription Examples</h2>
+    <p class="section-desc">
+      Real-world audio processed by SoulX-Transcriber. Press play and watch the transcript scroll in sync.
+      <span style="color:var(--accent-gold)">🗣️ Overlapping speech</span> from multiple speakers highlights simultaneously.
+    </p>
+  </div>
+  <div id="demo-container"></div>
+</div>
+
+<!-- REFERENCES -->
+<div id="references">
+  <div class="reveal">
+    <div class="section-tag">Cite</div>
+    <h2 class="section-title">References</h2>
+  </div>
+  <div class="ref-list reveal">
+    <div class="ref-item"><span class="ref-num">[1]</span><div class="ref-body">Z. Peng et al., &ldquo;<span class="ref-title">VIBEVOICE-ASR Technical Report</span>,&rdquo; <em>CoRR</em>, 2026. <a href="https://arxiv.org/abs/2601.18184" target="_blank" rel="noopener">[Link]</a></div></div>
+    <div class="ref-item"><span class="ref-num">[2]</span><div class="ref-body">Y. Fu et al., &ldquo;<span class="ref-title">AISHELL-4</span>,&rdquo; <em>Proc. Interspeech</em>, 2021. <a href="https://www.isca-archive.org/interspeech_2021/fu21b_interspeech.html" target="_blank" rel="noopener">[Link]</a></div></div>
+    <div class="ref-item"><span class="ref-num">[3]</span><div class="ref-body">Y. Liang et al., &ldquo;<span class="ref-title">M2MeT 2.0</span>,&rdquo; <em>Proc. ASRU</em>, 2023. <a href="https://ieeexplore.ieee.org/abstract/document/10389625" target="_blank" rel="noopener">[Link]</a></div></div>
+    <div class="ref-item"><span class="ref-num">[4]</span><div class="ref-body">B. Mu et al., &ldquo;<span class="ref-title">MLC-SLM Challenge</span>,&rdquo; <em>Proc. ICASSP</em>, 2026. <a href="https://arxiv.org/abs/2509.13785" target="_blank" rel="noopener">[Link]</a></div></div>
+    <div class="ref-item"><span class="ref-num">[5]</span><div class="ref-body">J. Carletta et al., &ldquo;<span class="ref-title">The AMI Meeting Corpus</span>,&rdquo; <em>MLMI</em>, Springer, 2005. <a href="https://doi.org/10.1007/11677482_3" target="_blank" rel="noopener">[Link]</a></div></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-links">
+    <a href="https://arxiv.org/abs/2603.25377" target="_blank" rel="noopener">arXiv</a>
+    <a href="https://huggingface.co/Soul-AILab" target="_blank" rel="noopener">HuggingFace</a>
+    <a href="https://github.com/Soul-AILab/SoulX-Transcriber" target="_blank" rel="noopener">GitHub</a>
+    <a href="http://www.npu-aslp.org/" target="_blank" rel="noopener">ASLP Lab</a>
+  </div>
+  <p>SoulX-Transcriber · Soul AILab · ASLP@NPU · Apache 2.0 License</p>
+  <p style="margin-top:6px">Contact: yhdai@mail.nwpu.edu.cn &nbsp;|&nbsp; linhaopeng@soulapp.cn &nbsp;|&nbsp; wangxinsheng@soulapp.cn</p>
+</footer>
+
+</div><!-- end .page -->
+
+<script>
+// 说话人调色板（Aurora Ocean）
+const SPK_PALETTE = [
+  '#0d9488','#14b8a6','#6366f1','#3b82f6','#f472b6',
+  '#059669','#8b5cf6','#f59e0b','#06b6d4','#ec4899'
+];
+
+function parseHyp(hyp) {
+  if (!hyp || hyp === 'none') return [];
+  const re = new RegExp("\\[(\\d{2}:\\d{2}\\.\\d{2})\\s*-->" +
+                      "\\s*(\\d{2}:\\d{2}\\.\\d{2})\\]\\s*(Speaker \\d+):\\s*(.*)");
+  return hyp.trim().split('\n').map(line => {
+    const m = line.trim().match(re);
+    if (!m) return null;
+    return {
+      start: parseTS(m[1]),
+      end:   parseTS(m[2]),
+      speaker: m[3].trim(),
+      text: m[4].trim()
+    };
+  }).filter(Boolean).sort((a,b) => a.start - b.start);
+}
+function parseTS(s) {
+  const [mm, ss] = s.split(':');
+  return parseFloat(mm) * 60 + parseFloat(ss);
+}
+function detectOverlaps(lines) {
+  const flags = new Array(lines.length).fill(false);
+  for (let i = 0; i < lines.length; i++) {
+    for (let j = i + 1; j < lines.length; j++) {
+      if (lines[i].start < lines[j].end - 0.1 && lines[i].end > lines[j].start + 0.1) {
+        flags[i] = flags[j] = true;
+      }
+    }
+  }
+  return flags;
+}
+function fmtTime(s) {
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+
+// 示例 Demo 数据（可按需扩展）
+// Demo 数据示例
+const RAW_DEMOS = [
+ {
+    "title": "电视剧片段 — 聊天谈话",
+    "subtitle": "Multi-speaker business dialogue with rapid turn-taking and contextual reasoning.",
+    "lang": "zh",
+    "video_path": "assets/video_dialogue.mp4",
+    "hyp": "[00:00.87 --> 00:01.49] Speaker 1: 现在\n[00:15.40 --> 00:18.94] Speaker 2: 怎么样想好给程启让多大一个惊喜了吗\n[00:21.32 --> 00:35.84] Speaker 3: 我之前跟曹牧聊过我们目前能拿出来竞标的资金有十三点三亿但是百安的市值程启让肯定一早就估算过了我们说的太少他肯定不会相信说不定还会适得其反\n[00:38.12 --> 00:47.40] Speaker 2: 对所以要给他一个既让他觉得合理又在他心理范围之内的价格这样才更容易让他相信\n[00:49.20 --> 00:51.72] Speaker 3: 我们怎么能知道他的心理价位啊\n[00:52.24 --> 00:55.84] Speaker 2: 估算一个公司的市值和流动资金是我的强项好吗\n[00:58.40 --> 01:04.16] Speaker 2: 据我估算观潮现在最多能用的资金不超过十三个亿\n[01:06.48 --> 01:17.28] Speaker 2: 十二十二点九这个价格一出他就必须孤注一掷而且更容易让他相信\n[01:18.24 --> 01:22.80] Speaker 3: 曹牧说我们这次最幸运的事情就是拉到了你这个大股东\n[01:23.92 --> 01:24.32] Speaker 2: 嗯\n[01:24.32 --> 01:25.76] Speaker 3: 我现在总算是信了\n[01:28.08 --> 01:28.72] Speaker 2: 什么意思\n[01:29.60 --> 01:30.72] Speaker 2: 之前还怀疑过\n[01:31.20 --> 01:38.88] Speaker 3: 那当然不是呃我之前就知道你非常厉害但是也没有想到你这么厉害\n[01:40.64 --> 01:44.64] Speaker 2: 是吗那看来以后\n[01:47.44 --> 01:48.64] Speaker 3: 哎你干嘛关我手机啊\n[01:49.44 --> 01:51.20] Speaker 2: 我得好好表现表现\n[01:52.72 --> 01:54.48] Speaker 2: 今天下午就被他打断了\n"
+  },
+  {
+    "title": "播客 — 足球节目",
+    "subtitle": "Multi-speaker podcast dialogue with rapid turn-taking and high overlapping ratio.",
+    "lang": "zh",
+    "video_path": "assets/podcast.mp4",
+    "hyp": "[00:00.00 --> 00:03.78] Speaker 1: 咱实际上是纯投入的球迷应该是纯投入对\n[00:03.39 --> 00:18.31] Speaker 2: 对说白了还是这个球迷爱这个运动爱自己城市这球队对吧你就是那个你到客场你输了也没关系你打的不好也没关系你尽百分之百去努力去拼了\n[00:06.77 --> 00:07.52] Speaker 1: 对对对\n[00:09.09 --> 00:10.59] Speaker 1: 对对对对对对对是\n[00:13.45 --> 00:13.93] Speaker 1: 嗯\n[00:15.45 --> 00:15.93] Speaker 1: 对\n[00:18.31 --> 00:31.22] Speaker 2: 我们球迷到客场支持你我们也认可但是你出现那种状况你跟那个打其他比赛任何一场主主主场也好客场的那判若两队那根本就不是一个队伍打的比赛\n[00:30.72 --> 00:59.00] Speaker 3: 对老陈说这个特别到位我觉得今年泰达的比赛好多比赛都是就是判若两堆头一轮赢山东了第二轮输这个上海上港这这两这两场是连着吗我印象不太深了啊反正就是感觉这同一拨人啊对吧你说这个赛场环境也好时间也好你说训练能出多大问题体能也好可这个不科学对吧感觉就是这是泰达吗这是上一轮赢了山东那个对没错\n[00:46.33 --> 00:46.88] Speaker 1: 嗯\n[00:47.71 --> 00:48.31] Speaker 1: 啊对\n[00:59.00 --> 01:03.98] Speaker 3: 对吧我们感觉咱咱在这拍大腿着急这球咱们都不顶\n[00:59.00 --> 01:01.42] Speaker 1: 没错对对对没错\n[01:02.77 --> 01:04.00] Speaker 1: 对是是\n[01:04.00 --> 01:10.06] Speaker 1: 我觉得实际上是什么一个情况啊咱们现在还是这个更多的喜欢看赢球的比赛实际上更多的\n[01:09.69 --> 01:11.75] Speaker 3: 谁都愿意看赢球\n[01:11.75 --> 01:21.19] Speaker 1: 因为那个只有说这个球输了才会这球输了才能挖掘很多那个就是不这个这个这个这个问题\n[01:21.19 --> 01:21.72] Speaker 2: 啊对\n[01:21.72 --> 01:59.93] Speaker 1: 对吧您说赢球的话你不存在问题吗他可能也存在问题但是他能掩盖他更多是掩盖问题而输球呢对吧或者这个原因啊什么场外因素啊这个各种想法都啊全都出来了其实我觉得更多是咱们一个心理任何这不这也也可能也是非常正常的现在目前咱们现在这个这个这个国内这个联赛也好这市场也好包括球迷也好还是希望看赢球的比赛对吧都都是这样你一你一输了你一输了你肯定会有问题任何问题今天咱就对你这你至少咱咱就说咱为什么从后面那一场咱最简单的说后面跟那个青岛跟那个长春\n[01:28.00 --> 01:28.62] Speaker 2: 啊对\n[01:39.66 --> 01:40.08] Speaker 2: 嗯\n[01:46.62 --> 01:47.16] Speaker 2: 对\n[01:48.30 --> 01:50.62] Speaker 2: 但是你输了你你输了\n[01:51.90 --> 01:53.30] Speaker 1: 哎对\n[01:54.11 --> 01:55.05] Speaker 2: 这是有对\n[01:59.82 --> 02:00.62] Speaker 3: 长春嗯\n[02:00.62 --> 02:02.72] Speaker 1: 为什么当时反应大因为你之前五连胜了\n[02:03.38 --> 02:06.47] Speaker 2: 但是你输了你到到客场也能接受这个\n[02:03.78 --> 02:05.41] Speaker 1: 对吧你只要不你只要\n[02:06.47 --> 02:14.88] Speaker 2: 咱也能接受你你要把球输了我们也能接受你你得打出那那那个那个气势\n[02:06.47 --> 02:09.12] Speaker 1: 之前你要没有五连胜你不会这么着\n[02:10.38 --> 02:11.28] Speaker 3: 长春长春\n[02:14.88 --> 02:17.12] Speaker 3: 长春那场球啊老陈您去了\n[02:17.75 --> 02:20.74] Speaker 2: 长春我以为就是这个知道那时候输了我就没去\n[02:19.40 --> 02:20.00] Speaker 3: 对\n[02:20.74 --> 02:22.18] Speaker 3: 啊心气儿不高\n[02:22.18 --> 02:23.06] Speaker 2: 心气儿不高\n[02:23.06 --> 02:24.41] Speaker 1: 真有呢\n[02:24.41 --> 02:53.94] Speaker 2: 怕原因就是因为他输了输的挺莫名其妙的那种球输的可能大伙网上都知道都传了这事儿也不隐瞒输那样球确实他们都说默契球那球啊从场面来讲确实看上去也拼了也打了踢的也也挺正常场面又骂说足协现在抓不到你这个打假球打默契球把柄他场面上没出现他就是在关键位关键的时候进球那个点上那位置上他出现了那种\n[02:37.52 --> 02:38.00] Speaker 3: 啊\n[02:53.94 --> 03:03.38] Speaker 2: 唉莫名其妙那球进球所以大伙才怀疑到了你是默契球那场球我所以输完之后长春的心气就不高不乐意去了\n[02:54.27 --> 02:55.16] Speaker 1: 莫名其妙\n[03:03.38 --> 03:05.31] Speaker 3: 这两场球啊我都在家看的那个我身边朋友都知道我刚才在跟大伙也聊了我身边朋友太大球迷太少了您知道吗我是那\n[03:03.38 --> 03:03.81] Speaker 2: 啊\n[03:05.31 --> 03:05.75] Speaker 2: 嗯\n[03:12.98 --> 03:14.12] Speaker 2: 包括这个\n[03:15.38 --> 03:16.16] Speaker 3: 包括这个\n[03:16.16 --> 03:36.76] Speaker 3: 就他们都问我哎呀你这就我有时候你就周中的周周末比赛周中比赛我下了班噼里咕噜往家跑我得看那个比赛都问我你这是干嘛呢至至于的嘛但我也没法跟他们解释不清楚对吧我觉得也是解释不清楚我就爱就想看就想关心您把我跟您的这看法是一样的青岛那场球输了之后\n[03:23.72 --> 03:24.25] Speaker 2: 嗯\n[03:28.74 --> 03:29.31] Speaker 2: 哦\n[03:33.16 --> 03:33.66] Speaker 2: 嗯\n[03:34.44 --> 03:35.00] Speaker 2: 对对\n[03:36.76 --> 03:41.06] Speaker 3: 长春那场球我看看吧看看吧然后就正好在我对象他们家周末\n[03:41.76 --> 03:59.07] Speaker 3: 哎呀我就倚在那个炕上我在那儿看看半截我给睡着了哎呦二上来就二比零那年零九年还是一零年也是上来二比零但是咱给扳成三比二最后三比三对吧这心我当时还在想能不能重现一下还能\n[03:56.96 --> 03:57.50] Speaker 2: 嗯\n[03:58.62 --> 03:59.22] Speaker 2: 嗯\n[03:59.07 --> 04:05.44] Speaker 3: 得扳回来结果根本就没有进了一个后来又让人进一个进进了一个三比一嘛\n[04:05.44 --> 04:06.06] Speaker 2: 嗯\n[04:06.06 --> 04:09.00] Speaker 3: 哎这这确实挺伤心啊这个韩信\n[04:09.00 --> 04:10.62] Speaker 2: 挺伤伤心\n[04:10.62 --> 04:14.06] Speaker 1: 伤心总是呢伤心总是难免的\n[04:14.06 --> 04:15.14] Speaker 1: 这东西就是\n[04:14.88 --> 04:16.06] Speaker 3: 准备准备这个\n[04:17.31 --> 04:28.17] Speaker 1: 还是这个这可能这足球这也没办法这个东西谁说不好还是我觉得还是时间吧时间能够能够拨开一些\n[04:28.81 --> 04:29.50] Speaker 1: 能够\n[04:28.81 --> 04:51.62] Speaker 2: 你说时间拨开一些吧你在前几年的好些东西内幕消息也好是其他的不正当不正确的个比赛不正当的比赛啊有些其他的场次也现在也没爆出来为嘛呢中国中国这足球的东西好些内幕也好啊什么球的东西都不敢去各个俱乐部也好足协也不敢上面报为嘛呢我有这个疑问现在\n[04:33.81 --> 04:34.38] Speaker 1: 嗯\n[04:51.62 --> 04:57.80] Speaker 3: 因为我觉得啊有可能是他这一个利益链条的问题你知道比如说你我连着你你连着他\n[04:55.84 --> 04:56.50] Speaker 1: 嗯对\n"
+  },
+  // "video_path": "assets/video.mp4",
+  {
+    "title": "影视剧 — 多人对话 + 场景转换（语义中断）",
+    "subtitle": "Multi-speaker dialogue with scene transitions.",
+    "lang": "zh",
+    // "wav_path": "assets/video_niweimin.wav",
+    "video_path": "assets/video_niweimin.mp4",
+    "hyp": "[00:03.89 --> 00:11.78] Speaker 1: 倪伟民我告诉你啊今儿老二没来这里绝对有原因\n[00:12.98 --> 00:15.94] Speaker 2: 什么原因呢忙呗\n[00:16.43 --> 00:21.25] Speaker 1: 忙什么呀忙什么时候老太太过生日他不来过今儿是不是头一回\n[00:21.65 --> 00:29.35] Speaker 1: 肯定有问题哎你没发现吗春梅那表情今儿一晚上那样\n[00:30.55 --> 00:31.75] Speaker 1: 绝对他们俩有事儿\n[00:33.15 --> 00:33.55] Speaker 3: 来\n[00:36.63 --> 00:37.63] Speaker 3: 小心烫啊\n[00:38.67 --> 00:40.67] Speaker 4: 你二嫂多好一个人呐\n[00:42.15 --> 00:47.15] Speaker 4: 哼你二哥要是有什么花花肠子我第一个饶不了他\n[00:50.71 --> 00:57.43] Speaker 4: 给你那老同学周秦给他打个电话看他知道不知道你二哥去哪儿了\n[00:58.23 --> 01:01.75] Speaker 3: 为什么要给周秦打电话呀他现在是你二哥学生\n[01:02.63 --> 01:07.75] Speaker 4: 成天在一起做实验还到家里来看过我给我买过八宝饭呢\n[01:08.95 --> 01:12.15] Speaker 3: 周秦去家里看过您什么时候的事儿\n[01:13.79 --> 01:14.75] Speaker 4: 前一阵子\n[01:15.75 --> 01:18.47] Speaker 2: 你这是说什么呢你这是说的\n[01:18.99 --> 01:21.03] Speaker 2: 这吵个架拌个嘴你\n[01:21.03 --> 01:25.55] Speaker 1: 哎呦你可真逗他们俩是那个吵个架拌个嘴的人吗\n[01:26.19 --> 01:31.67] Speaker 1: 啊是那个为小事儿叨叨唠唠的人吗人家不是我\n[01:31.67 --> 01:35.07] Speaker 1: 人家春梅是高档次的人不像我这老百姓\n[01:35.07 --> 01:35.95] Speaker 1: 他们俩呀\n[01:36.95 --> 01:40.67] Speaker 1: 不出事则好出事儿就是大事儿\n[01:41.75 --> 01:44.03] Speaker 1: 你这当大哥的你不管行\n[01:44.67 --> 01:47.91] Speaker 1: 哎你甭操心啊你什么都甭管\n[01:47.91 --> 01:51.67] Speaker 1: 跟我也没关系我更不管了我先管好自个儿家吧\n[01:52.31 --> 01:54.23] Speaker 1: 先管好我儿子孙子吧\n[01:56.91 --> 02:00.23] Speaker 1: 这真睡得着觉你看哎呦\n",
+  },
+  {
+    "title": "多人会议 — 远场对话 + 多人话语重叠",
+    "subtitle": "Meeting scenario with multi-speaker dialogue and overlapping speech.",
+    "lang": "zh",
+    "video_path": "assets/meeting.mp4",
+    "hyp": "[00:00.00 --> 00:00.41] Speaker 1: 对\n[00:00.69 --> 00:03.73] Speaker 2: 那一等奖不是不是一等奖直接\n[00:02.85 --> 00:07.08] Speaker 1: 还包括场地啊就是就是吃喝呀这些东西对\n[00:05.68 --> 00:08.35] Speaker 2: 我算了算应该还够一万块钱差不多\n[00:08.60 --> 00:13.91] Speaker 3: 不你这个这所谓的这一二三等奖这是抽奖的形式来的是不是\n[00:13.97 --> 00:14.39] Speaker 1: 对\n[00:14.57 --> 00:16.94] Speaker 3: 但是他有一些固定的奖是要发的\n[00:16.13 --> 00:17.90] Speaker 2: 年终奖年终奖那是\n[00:17.02 --> 00:19.39] Speaker 1: 优秀优秀员工奖啊什么的\n[00:18.36 --> 00:22.98] Speaker 3: 这个这个东西不放在这里头不不在这个预算里面\n[00:20.39 --> 00:21.89] Speaker 2: 年终奖不在这个十万里\n[00:22.60 --> 00:32.54] Speaker 1: 不是年终奖是绩效超额奖比方说今年完成在今年完成了百分之百的那个员工可能就这一个人他的绩效超了五十万那你是不是要单独给他发个奖\n[00:24.79 --> 00:26.97] Speaker 3: 对对对优秀员工的绩效的\n[00:32.62 --> 00:37.33] Speaker 3: 但是这个不在这个预算里面儿但颁奖在这个颁奖在这个程序里面\n[00:34.33 --> 00:35.61] Speaker 2: 啊不在这十万里边儿\n[00:35.98 --> 00:42.12] Speaker 4: 不过不过这个是应该在预算里的因为这个只要是在年会里呢奖金就全都是在一起的\n",
+  },
+];
+
+const demoContainer = document.getElementById('demo-container');
+const demoInstances = [];
+let globalAudioCtx = null;
+function ensureAudioContext() {
+  if (!globalAudioCtx) {
+    try {
+      globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      globalAudioCtx = null;
+    }
+  }
+  return globalAudioCtx;
+}
+
+// 构建 Demo 卡片
+RAW_DEMOS.forEach((raw, demoIdx) => {
+  const hypText = raw.hyp || raw[' hyp'] || '';
+  const lines = parseHyp(hypText);
+  if (!lines.length) return;
+
+  const overlaps = detectOverlaps(lines);
+  const spkMap = {};
+  let spkIdx = 0;
+  lines.forEach(l => {
+    if (!(l.speaker in spkMap)) {
+      spkMap[l.speaker] = SPK_PALETTE[spkIdx % SPK_PALETTE.length];
+      spkIdx++;
+    }
+  });
+  const spkCount = Object.keys(spkMap).length;
+  const hasOverlap = overlaps.some(Boolean);
+
+  const title = raw.title || (raw.index ? raw.index.split('_')[0].slice(0,12) + '...' : `Demo ${demoIdx + 1}`);
+  const subtitle = raw.subtitle || 'Timestamped speaker-attributed transcription by SoulX-Transcriber.';
+  const lang = raw.lang || 'zh';
+  const langLabel = lang === 'en' ? '英文 EN' : lang === 'mix' ? '中英 ZH/EN' : '中文 ZH';
+  const langClass = lang === 'en' ? 'tag-en' : 'tag-zh';
+
+  const mediaPath = raw.video_path || raw.wav_path || '';
+  const isVideo = /\.(mp4|webm|mov|mkv)$/i.test(mediaPath);
+  const isAudio = /\.(wav|mp3|m4a|flac|ogg)$/i.test(mediaPath);
+
+  const mediaId = `media-${demoIdx}`;
+  const scrollId = `scroll-${demoIdx}`;
+  const legendId = `legend-${demoIdx}`;
+  const waveCanvasId = `wave-${demoIdx}`;
+
+  let mediaHTML = '';
+  if (isVideo) {
+    mediaHTML = `
+      <video id="${mediaId}" controls preload="metadata" style="width:100%;max-height:420px;">
+        <source src="${mediaPath}" type="video/mp4">
+      </video>`;
+  } else if (isAudio) {
+    mediaHTML = `
+      <div class="audio-wrap">
+        <audio id="${mediaId}" controls preload="auto">
+          <source src="${mediaPath}">
+        </audio>
+        <canvas id="${waveCanvasId}" class="audio-waveform"></canvas>
+      </div>`;
+  } else {
+    mediaHTML = `<div style="padding:32px;color:#93c5cd;font-size:13px;">No media found.</div>`;
+  }
+
+  const card = document.createElement('div');
+  card.className = 'demo-card reveal';
+  card.innerHTML = `
+    <div class="demo-header">
+      <div class="demo-num">${demoIdx + 1}</div>
+      <div class="demo-title-block">
+        <div class="demo-title">${title}</div>
+        <div class="demo-subtitle-text">${subtitle}</div>
+      </div>
+      <div class="demo-tags">
+        <span class="tag ${langClass}">${langLabel}</span>
+        <span class="tag tag-spk">${spkCount} Speaker${spkCount > 1 ? 's' : ''}</span>
+        ${hasOverlap ? '<span class="tag tag-overlap">🗣️ Overlap</span>' : ''}
+      </div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-video-wrap">${mediaHTML}</div>
+      <div class="demo-subtitle-panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/>
+          </svg>
+          Transcript
+        </div>
+        <div class="panel-scroll" id="${scrollId}"></div>
+        <div class="panel-legend" id="${legendId}"></div>
+      </div>
+    </div>`;
+  demoContainer.appendChild(card);
+
+  const scrollEl = document.getElementById(scrollId);
+  lines.forEach((line, i) => {
+    const color = spkMap[line.speaker];
+    const isOL = overlaps[i];
+    const div = document.createElement('div');
+    div.className = 'sub-line' + (isOL ? ' overlap-line' : '');
+    div.dataset.idx = i;
+    div.style.setProperty('--spk-color', color);
+    div.innerHTML = `
+      <div class="sub-meta">
+        <span class="speaker-dot" style="background:${color}"></span>
+        <span style="color:${color};font-weight:600">${line.speaker}</span>
+        <span style="opacity:0.5">${fmtTime(line.start)} – ${fmtTime(line.end)}</span>
+        ${isOL ? '<span class="overlap-indicator">🗣️ overlap</span>' : ''}
+      </div>
+      <div class="sub-text">${line.text}</div>`;
+    div.addEventListener('click', () => {
+      const media = document.getElementById(mediaId);
+      if (media) { media.currentTime = line.start; media.play(); }
+    });
+    scrollEl.appendChild(div);
+  });
+
+  const legendEl = document.getElementById(legendId);
+  Object.entries(spkMap).forEach(([name, color]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${color}"></span><span>${name}</span>`;
+    legendEl.appendChild(item);
+  });
+
+  demoInstances.push({
+    demoIdx,
+    mediaId,
+    scrollId,
+    lines,
+    overlaps,
+    spkMap,
+    isAudio,
+    waveCanvasId: isAudio ? waveCanvasId : null,
+  });
+});
+
+// 同步高亮 & 自动滚动
+demoInstances.forEach(inst => {
+  const media = document.getElementById(inst.mediaId);
+  const scrollEl = document.getElementById(inst.scrollId);
+  if (!media || !scrollEl) return;
+
+  let prevKey = '';
+  let userScrolling = false;
+  let scrollTimer = null;
+
+  scrollEl.addEventListener('scroll', () => {
+    userScrolling = true;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { userScrolling = false; }, 2000);
+  }, { passive: true });
+
+  let rafId = null;
+
+  function sync() {
+    const t = media.currentTime || 0;
+    const subLines = scrollEl.querySelectorAll('.sub-line');
+    if (!subLines.length) {
+      rafId = requestAnimationFrame(sync);
+      return;
+    }
+
+    const activeSet = new Set();
+    for (let i = 0; i < inst.lines.length; i++) {
+      if (t >= inst.lines[i].start && t < inst.lines[i].end) {
+        activeSet.add(i);
+      }
+    }
+    if (activeSet.size === 0) {
+      for (let i = inst.lines.length - 1; i >= 0; i--) {
+        if (t >= inst.lines[i].start) { activeSet.add(i); break; }
+      }
+    }
+
+    const key = [...activeSet].join(',');
+    if (key !== prevKey) {
+      prevKey = key;
+      subLines.forEach((el, i) => {
+        el.classList.toggle('active', activeSet.has(i));
+      });
+      if (!userScrolling && activeSet.size > 0) {
+        const earliest = Math.min(...activeSet);
+        if (subLines[earliest]) {
+          subLines[earliest].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    }
+
+    if (!media.paused) {
+      rafId = requestAnimationFrame(sync);
+    }
+  }
+
+  media.addEventListener('play', () => {
+    if (!rafId) rafId = requestAnimationFrame(sync);
+  });
+  media.addEventListener('pause', () => {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+    sync();
+  });
+  media.addEventListener('seeked', () => {
+    prevKey = '';
+    sync();
+  });
+
+  sync();
+});
+
+// 简单音频波形可视化
+demoInstances.forEach(inst => {
+  if (!inst.isAudio || !inst.waveCanvasId) return;
+
+  const media = document.getElementById(inst.mediaId);
+  const canvas = document.getElementById(inst.waveCanvasId);
+  if (!media || !canvas) return;
+
+  const audioCtx = ensureAudioContext();
+  if (!audioCtx) return;
+
+  const ctx = canvas.getContext('2d');
+  const analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  let sourceNode = null;
+  let animId = null;
+
+  function drawWave() {
+    animId = requestAnimationFrame(drawWave);
+    analyser.getByteFrequencyData(dataArray);
+
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const barCount = 80;
+    const step = Math.floor(bufferLength / barCount);
+    const barWidth = W / barCount;
+    for (let i = 0; i < barCount; i++) {
+      const v = dataArray[i * step] / 255;
+      const barHeight = v * (H * 0.8);
+      const x = i * barWidth;
+      const y = H - barHeight;
+      const grd = ctx.createLinearGradient(x, y, x, H);
+      grd.addColorStop(0, '#2dd4bf');
+      grd.addColorStop(1, '#0c1929');
+      ctx.fillStyle = grd;
+      ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+    }
+  }
+
+  function connectIfNeeded() {
+    if (sourceNode) return;
+    try {
+      sourceNode = audioCtx.createMediaElementSource(media);
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+    } catch (e) {}
+  }
+
+  function handlePlay() {
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    connectIfNeeded();
+    if (!animId) drawWave();
+  }
+
+  function handlePause() {
+    if (animId) {
+      cancelAnimationFrame(animId);
+      animId = null;
+    }
+  }
+
+  media.addEventListener('play', handlePlay);
+  media.addEventListener('pause', handlePause);
+  media.addEventListener('ended', handlePause);
+});
+
+// ═══ Results Charts ═══
+const MODELS = ['Gemini-2.5-Pro', 'VibeVoice-ASR', 'Ours (4194h)'];
+const MODEL_COLORS = {
+  'Gemini-2.5-Pro': '#f59e0b',
+  'VibeVoice-ASR': '#6366f1',
+  'Ours (4194h)': '#059669'
+};
+const CHART_DATA = {
+  video: {
+    datasets: ['Video-Internal', 'Internal-zh', 'Internal-en'], langs: ['mix', 'zh', 'en'],
+    values: {
+      'Gemini-2.5-Pro': [{ WER:22.47,cpWER:44.13,DER:74.05,dcp:21.66 },{ WER:18.28,cpWER:40.97,DER:69.35,dcp:22.69 },{ WER:55.40,cpWER:68.82,DER:100.95,dcp:13.42 }],
+      'VibeVoice-ASR':  [{ WER:16.45,cpWER:58.60,DER:47.18,dcp:42.15 },{ WER:17.70,cpWER:62.06,DER:47.65,dcp:44.36 },{ WER:7.11,cpWER:32.65,DER:44.62,dcp:25.54 }],
+      'Ours (4194h)':   [{ WER:6.27,cpWER:24.43,DER:15.33,dcp:18.16 },{ WER:6.50,cpWER:25.81,DER:16.68,dcp:19.31 },{ WER:4.42,cpWER:16.31,DER:7.58,dcp:11.89 }],
+    }
+  },
+  meeting: {
+    datasets: ['AISHELL4', 'AliMeeting', 'AMI-SDM'], langs: ['zh', 'zh', 'en'],
+    values: {
+      'Gemini-2.5-Pro': [{ WER:19.81,cpWER:25.11,DER:36.07,dcp:5.30 },{ WER:30.16,cpWER:39.29,DER:56.39,dcp:9.13 },{ WER:31.66,cpWER:39.98,DER:50.28,dcp:8.32 }],
+      'VibeVoice-ASR':  [{ WER:22.19,cpWER:26.16,DER:8.94,dcp:3.97 },{ WER:34.31,cpWER:39.92,DER:19.62,dcp:5.61 },{ WER:30.53,cpWER:35.86,DER:21.00,dcp:5.33 }],
+      'Ours (4194h)':   [{ WER:7.13,cpWER:8.14,DER:3.38,dcp:1.01 },{ WER:19.72,cpWER:19.92,DER:6.70,dcp:0.20 },{ WER:23.29,cpWER:25.16,DER:13.56,dcp:1.87 }],
+    }
+  },
+  challenge: {
+    datasets: ['MLC-SLM-1', 'MLC-SLM-2'], langs: ['en', 'en'],
+    values: {
+      'Gemini-2.5-Pro': [{ WER:36.87,cpWER:41.88,DER:42.33,dcp:5.01 },{ WER:26.73,cpWER:32.19,DER:46.19,dcp:5.46 }],
+      'VibeVoice-ASR':  [{ WER:10.30,cpWER:13.45,DER:6.27,dcp:3.15 },{ WER:7.97,cpWER:11.38,DER:3.14,dcp:3.41 }],
+      'Ours (4194h)':   [{ WER:9.17,cpWER:11.74,DER:4.76,dcp:2.57 },{ WER:8.54,cpWER:11.76,DER:4.35,dcp:3.22 }],
+    }
+  }
+};
+const METRICS = [{ key:'WER',label:'WER' },{ key:'cpWER',label:'cpWER' },{ key:'DER',label:'DER' },{ key:'dcp',label:'∆cp' }];
+
+function renderChart(groupKey) {
+  const group = CHART_DATA[groupKey];
+  const box = document.getElementById('chart-' + groupKey);
+  if (!box || !group) return;
+  const MAX_H = 200;
+  const metricMax = {};
+  METRICS.forEach(({ key }) => {
+    metricMax[key] = 0.001;
+    MODELS.forEach(m => group.datasets.forEach((_, di) => {
+      metricMax[key] = Math.max(metricMax[key], group.values[m][di][key]);
+    }));
+  });
+  const LT = { zh:'ZH', en:'EN', mix:'ZH/EN' };
+  let html = '<div class="chart-bars-area">';
+  METRICS.forEach(({ key, label }) => {
+    html += '<div class="metric-major-group"><div class="metric-ds-row">';
+    group.datasets.forEach((ds, di) => {
+      html += '<div class="metric-ds-subgroup"><div class="metric-model-bars">';
+      MODELS.forEach(m => {
+        const v = group.values[m][di][key];
+        const h = Math.max(2, Math.round((v / metricMax[key]) * MAX_H));
+        html += `<div class="bar-fill" style="height:0;background:${MODEL_COLORS[m]}" data-val="${v}" data-target="${h}"></div>`;
+      });
+      const lang = group.langs?.[di];
+      const badge = lang ? `<span class="lang-badge lang-${lang}" style="margin-left:0;font-size:8px;padding:0 4px">${LT[lang]}</span>` : '';
+      html += `</div><div class="ds-mini-label"><span class="ds-label-text">${ds}</span>${badge}</div></div>`;
+    });
+    html += `</div><div class="metric-major-label">${label}</div></div>`;
+  });
+  html += '</div><div class="chart-legend">';
+  MODELS.forEach(m => {
+    html += `<div class="chart-legend-item"><span class="chart-legend-swatch" style="background:${MODEL_COLORS[m]}"></span><span>${m}</span></div>`;
+  });
+  html += '</div>';
+  box.innerHTML = html;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    box.querySelectorAll('.bar-fill').forEach(b => { b.style.height = b.dataset.target + 'px'; });
+  }));
+}
+
+function setView(gk, view, btn) {
+  const tv = document.getElementById('tv-' + gk);
+  const cv = document.getElementById('cv-' + gk);
+  if (!tv || !cv || !btn) return;
+  btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (view === 'chart') {
+    tv.classList.add('hidden');
+    cv.classList.add('open');
+    renderChart(gk);
+  } else {
+    tv.classList.remove('hidden');
+    cv.classList.remove('open');
+  }
+}
+
+// Scroll Reveal
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// Nav scroll + section spy
+(function () {
+  const nav = document.querySelector('nav');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const sections = ['about', 'results', 'demos', 'references']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('nav-scrolled', window.scrollY > 40);
+    const y = window.scrollY + window.innerHeight * 0.35;
+    let current = '';
+    sections.forEach(sec => {
+      if (sec.offsetTop <= y) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }, { passive: true });
+})();
+
+// Cursor glow
+(function () {
+  const glow = document.getElementById('cursor-glow');
+  if (!glow) return;
+  let gx = -999, gy = -999, tx = -999, ty = -999;
+  window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+  function tick() {
+    gx += (tx - gx) * 0.12;
+    gy += (ty - gy) * 0.12;
+    glow.style.left = gx + 'px';
+    glow.style.top = gy + 'px';
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// 背景波形
+(function () {
+  const canvas = document.getElementById('bg-wave');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+
+  const PAL = [
+    'rgba(45,212,191,','rgba(99,102,241,','rgba(244,114,182,',
+    'rgba(59,130,246,','rgba(20,184,166,','rgba(167,139,250,'
+  ];
+  const rng = (seed => () => { seed = (seed * 16807 + 0) % 2147483647; return (seed - 1) / 2147483646; })(42);
+
+  const WAVES = Array.from({ length: 10 }, (_, i) => ({
+    yPct: 0.06 + i * 0.11,
+    freq: 0.006 + rng() * 0.012,
+    amp: 10 + rng() * 26,
+    freq2: 0.017 + rng() * 0.018,
+    amp2f: 0.18 + rng() * 0.22,
+    speed: 0.10 + rng() * 0.28,
+    phase: rng() * Math.PI * 2,
+    color: PAL[i % PAL.length],
+    alpha: 0.05 + rng() * 0.08,
+    lw: 0.6 + rng() * 1.0,
+  }));
+
+  const PARTICLES = Array.from({ length: 52 }, () => {
+    const c = PAL[Math.floor(rng() * PAL.length)];
+    const bvx = (rng() - 0.5) * 0.24, bvy = (rng() - 0.5) * 0.24;
+    return {
+      x: rng() * window.innerWidth, y: rng() * window.innerHeight,
+      r: 0.9 + rng() * 2.0, vx: bvx, vy: bvy, baseVx: bvx, baseVy: bvy,
+      alpha: 0.22 + rng() * 0.3, color: c, pulse: rng() * Math.PI * 2,
+    };
+  });
+
+  const mouse = { x: -9999, y: -9999, moving: false };
+  let _mt = null;
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX; mouse.y = e.clientY; mouse.moving = true;
+    clearTimeout(_mt); _mt = setTimeout(() => { mouse.moving = false; }, 150);
+  });
+
+  let t = 0;
+  function draw() {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    WAVES.forEach(w => {
+      const cy = H * w.yPct;
+      ctx.beginPath();
+      ctx.strokeStyle = w.color + w.alpha + ')';
+      ctx.lineWidth = w.lw;
+      ctx.lineJoin = 'round';
+      for (let x = 0; x <= W; x += 4) {
+        const y = cy
+          + Math.sin(x * w.freq + t * w.speed + w.phase) * w.amp
+          + Math.sin(x * w.freq2 + t * w.speed * 0.55) * (w.amp * w.amp2f);
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+
+    PARTICLES.forEach(p => {
+      const a = p.alpha * (0.7 + 0.3 * Math.sin(t * 0.8 + p.pulse));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + a + ')';
+      ctx.fill();
+      const mdx = mouse.x - p.x, mdy = mouse.y - p.y;
+      const md = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (md < 150 && md > 0) {
+        const f = (1 - md / 150) * 0.06;
+        const nx = mdx / md, ny = mdy / md;
+        if (mouse.moving) { p.vx -= nx * f; p.vy -= ny * f; }
+        else {
+          const OR = 32;
+          if (md > OR) { p.vx += nx * f; p.vy += ny * f; }
+          else { p.vx -= nx * f * 1.4; p.vy -= ny * f * 1.4; }
+          p.vx += -ny * f * 0.4; p.vy += nx * f * 0.4;
+        }
+      }
+      p.vx = p.vx * 0.92 + p.baseVx * 0.08;
+      p.vy = p.vy * 0.92 + p.baseVy * 0.08;
+      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (spd > 3.2) { p.vx = p.vx / spd * 3.2; p.vy = p.vy / spd * 3.2; }
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10; if (p.y > H + 10) p.y = -10;
+    });
+
+    t += 0.026;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
