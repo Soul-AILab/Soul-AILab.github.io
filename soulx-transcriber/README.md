@@ -1,1 +1,1 @@
-# Speaker-Reasoner-Demo
+# SoulX-Transcriber demo
