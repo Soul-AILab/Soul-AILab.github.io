@@ -776,12 +776,12 @@
     <sup>3</sup> Moonstep AI, China
   </p>
   <div class="hero-links">
-    <a href="" target="_blank" class="hero-link link-arxiv">
+    <a href="http://arxiv.org/abs/2606.02400" target="_blank" class="hero-link link-arxiv">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
       Technical Report
     </a>
-    <a href="" target="_blank" rel="noopener" class="hero-link link-hf">🤗 HuggingFace</a>
-    <a href="" target="_blank" class="hero-link link-gh">
+    <a href="https://huggingface.co/Soul-AILab/SoulX-Transcriber" target="_blank" rel="noopener" class="hero-link link-hf">🤗 HuggingFace</a>
+    <a href="https://github.com/Soul-AILab/SoulX-Transcriber" target="_blank" class="hero-link link-gh">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
       GitHub
     </a>
@@ -846,10 +846,11 @@
           <th colspan="4" class="dataset-header">AMI-SDM<sup class="cite">[4]</sup><span class="lang-badge lang-en">EN</span></th></tr>
         <tr><th>DER↓</th><th>WER↓</th><th>cpWER↓</th><th>∆cp↓</th><th>DER↓</th><th>WER↓</th><th>cpWER↓</th><th>∆cp↓</th><th>DER↓</th><th>WER↓</th><th>cpWER↓</th><th>∆cp↓</th></tr>
       </thead><tbody>
-        <tr><td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td><td>6.77</td><td>21.4</td><td>24.99</td><td>3.59</td><td>10.92</td><td>27.4</td><td>29.33</td><td>1.93</td><td>13.43</td><td>24.65</td><td>28.82</td><td>4.17</td></tr>
+        <tr><td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td><td>6.77</td><td>21.4</td><td>24.99</td><td>3.59</td><td>10.92</td><td>27.4</td><td>29.33</td><td>1.93</td><td>13.43</td><td class="metric-best">24.65</td><td class="metric-best">28.82</td><td>4.17</td></tr>
         <tr><td class="model-name">Gemini-2.5-Pro</td><td>36.07</td><td>19.81</td><td>25.11</td><td>5.30</td><td>56.39</td><td>30.16</td><td>39.29</td><td>9.13</td><td>50.28</td><td>31.66</td><td>39.98</td><td>8.32</td></tr>
-        <tr><td class="model-name">Gemini-3.1-pro-preview</td><td>24.84</td><td>24.86</td><td>24.81</td><td>-0.05</td><td>30.76</td><td>18.82</td><td>18.99</td><td>0.17</td><td>40.40</td><td>30.82</td><td>32.97</td><td>2.15</td></tr>
-        <tr class="ours"><td class="model-name">SoulX-Transcriber (Ours)</td><td>2.89</td><td>14.16</td><td>13.90</td><td>-0.26</td><td>5.39</td><td>13.07</td><td>13.61</td><td>0.54</td><td>11.67</td><td>25.28</td><td>32.81</td><td>7.53</td></tr>
+        <tr><td class="model-name">Gemini-3.1-pro-preview</td><td>24.84</td><td>24.86</td><td>24.81</td><td>-0.05</td><td>30.76</td><td>18.82</td><td>18.99</td><td class="metric-best">0.17</td><td>40.40</td><td>30.82</td><td>32.97</td><td class="metric-best">2.15</td></tr>
+        <tr><td class="model-name">Qwen3.5-omni</td><td>22.33</td><td>15.13</td><td>14.71</td><td class="metric-best">-0.42</td><td>26.46</td><td class="metric-best">12.44</td><td class="metric-best">12.79</td><td>0.35</td><td>30.05</td><td>28.57</td><td>33.46</td><td>4.89</td></tr>
+        <tr class="ours"><td class="model-name">SoulX-Transcriber (Ours)</td><td class="metric-best">2.89</td><td class="metric-best">14.16</td><td class="metric-best">13.90</td><td>-0.26</td><td class="metric-best">5.39</td><td>13.07</td><td>13.61</td><td>0.54</td><td class="metric-best">11.67</td><td>25.28</td><td>32.81</td><td>7.53</td></tr>
       </tbody></table>
     </div></div>
     <div class="chart-view" id="cv-meeting"><div class="chart-box" id="chart-meeting"></div></div>
@@ -869,10 +870,10 @@
           <th colspan="4" class="dataset-header">AISHELL-4<sup class="cite">[2]</sup><span class="lang-badge lang-zh">ZH</span></th></tr>
         <tr><th>DER↓</th><th>CER↓</th><th>cpCER↓</th><th>∆cp↓</th><th>DER↓</th><th>CER↓</th><th>cpCER↓</th><th>∆cp↓</th></tr>
       </thead><tbody>
+        <tr><td class="model-name">Qwen3-Omni-30B-Instruct</td><td>38.36</td><td>25.28</td><td>37.54</td><td>12.26</td><td>34.71</td><td>15.95</td><td>23.63</td><td>7.68</td></tr>
         <tr><td class="model-name">VibeVoice-ASR<sup class="cite">[1]</sup></td><td>18.00</td><td>29.72</td><td>31.94</td><td>2.22</td><td>9.17</td><td>19.54</td><td>22.95</td><td>3.41</td></tr>
         <tr><td class="model-name">Gemini-2.5-Pro</td><td>58.14</td><td>31.69</td><td>42.22</td><td>10.53</td><td>40.87</td><td>20.26</td><td>26.31</td><td>6.05</td></tr>
         <tr><td class="model-name">Gemini-3.1-pro-preview</td><td>38.75</td><td>26.75</td><td>32.84</td><td>6.09</td><td>22.03</td><td>22.75</td><td>27.43</td><td>4.68</td></tr>
-        <tr><td class="model-name">Qwen3-Omni-30B-Instruct</td><td>38.36</td><td>25.28</td><td>37.54</td><td>12.26</td><td>34.71</td><td>15.95</td><td>23.63</td><td>7.68</td></tr>
         <tr class="ours"><td class="model-name">SoulX-Transcriber (Ours)</td><td>5.72</td><td>16.22</td><td>16.99</td><td>0.77</td><td>7.73</td><td>14.49</td><td>17.82</td><td>3.33</td></tr>
       </tbody></table>
     </div></div>
@@ -1326,19 +1327,21 @@ const MODEL_COLORS = {
   'Gemini-2.5-Pro': '#f59e0b',
   'Gemini-3.1-pro-preview': '#ec4899',
   'SoulX-Transcriber': '#059669',
+  'Qwen3.5-omni': '#94a3b8',
   'Qwen3-Omni-30B': '#0ea5e9'
 };
 const WER_METRICS = [{ key:'DER',label:'DER' },{ key:'WER',label:'WER' },{ key:'cpWER',label:'cpWER' },{ key:'dcp',label:'∆cp' }];
 const CER_METRICS = [{ key:'DER',label:'DER' },{ key:'CER',label:'CER' },{ key:'cpCER',label:'cpCER' },{ key:'dcp',label:'∆cp' }];
 const CHART_DATA = {
   meeting: {
-    models: ['VibeVoice-ASR', 'Gemini-2.5-Pro', 'Gemini-3.1-pro-preview', 'SoulX-Transcriber'],
+    models: ['VibeVoice-ASR', 'Gemini-2.5-Pro', 'Gemini-3.1-pro-preview', 'Qwen3.5-omni', 'SoulX-Transcriber'],
     metrics: WER_METRICS,
     datasets: ['AISHELL-4', 'AliMeeting', 'AMI-SDM'], langs: ['zh', 'zh', 'en'],
     values: {
       'VibeVoice-ASR': [{ DER:6.77,WER:21.4,cpWER:24.99,dcp:3.59 },{ DER:10.92,WER:27.4,cpWER:29.33,dcp:1.93 },{ DER:13.43,WER:24.65,cpWER:28.82,dcp:4.17 }],
       'Gemini-2.5-Pro': [{ DER:36.07,WER:19.81,cpWER:25.11,dcp:5.30 },{ DER:56.39,WER:30.16,cpWER:39.29,dcp:9.13 },{ DER:50.28,WER:31.66,cpWER:39.98,dcp:8.32 }],
       'Gemini-3.1-pro-preview': [{ DER:24.84,WER:24.86,cpWER:24.81,dcp:-0.05 },{ DER:30.76,WER:18.82,cpWER:18.99,dcp:0.17 },{ DER:40.40,WER:30.82,cpWER:32.97,dcp:2.15 }],
+      'Qwen3.5-omni': [{ DER:22.33,WER:15.13,cpWER:14.71,dcp:-0.42 },{ DER:26.46,WER:12.44,cpWER:12.79,dcp:0.35 },{ DER:30.05,WER:28.57,cpWER:33.46,dcp:4.89 }],
       'SoulX-Transcriber': [{ DER:2.89,WER:14.16,cpWER:13.90,dcp:-0.26 },{ DER:5.39,WER:13.07,cpWER:13.61,dcp:0.54 },{ DER:11.67,WER:25.28,cpWER:32.81,dcp:7.53 }],
     }
   },
